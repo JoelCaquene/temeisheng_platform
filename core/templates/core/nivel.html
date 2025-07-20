@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Níveis - Temeisheng{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm" style="background-color: #34495e; border-radius: 10px; border: 2px solid #2c3e50;">
+                <div class="card-header text-white text-center" style="background-color: #2c3e50; border-bottom: 2px solid #2c3e50;">
+                    <h3 class="mb-0" style="color: #ecf0f1;">Níveis de Investimento</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <p class="lead text-center mb-4" style="color: #bdc3c7;">Escolha o nível que melhor se adapta aos seus objetivos de investimento.</p>
+
+                    <div class="card p-3 mb-4 text-center" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h5 class="text-white">Seu Nível Ativo Atualmente:</h5>
+                        <p style="color: #1abc9c; font-size: 1.2em; font-weight: bold;">
+                            {% if nivel_ativo_usuario %}{{ nivel_ativo_usuario.nome }} (Depósito: {{ nivel_ativo_usuario.deposito_minimo|floatformat:2 }} Kz - Ganho Diário: {{ nivel_ativo_usuario.ganho_diario|floatformat:2 }} Kz)
+                            {% else %}Nenhum nível ativo. Faça um depósito para ativar!{% endif %}
+                        </p>
+                    </div>
+
+                    {% if niveis %}
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                            {% for nivel in niveis %}
+                                <div class="col">
+                                    <div class="card h-100 text-center shadow-sm" style="background-color: #3f5165; border: 2px solid {% if nivel_ativo_usuario and nivel_ativo_usuario.pk == nivel.pk %}#2ecc71{% else %}#546a80{% endif %};">
+                                        <div class="card-body">
+                                            <h4 class="card-title" style="color: #ecf0f1;">{{ nivel.nome }}</h4>
+                                            <p class="card-text" style="color: #bdc3c7;">Depósito Mínimo: <strong style="color: #1abc9c;">{{ nivel.deposito_minimo|floatformat:2 }} Kz</strong></p>
+                                            <p class="card-text" style="color: #bdc3c7;">Ganho Diário: <strong style="color: #f39c12;">{{ nivel.ganho_diario|floatformat:2 }} Kz</strong></p>
+                                            <p class="card-text" style="color: #bdc3c7;">Duração: {{ nivel.duracao_dias }} dias</p>
+                                            {% if nivel_ativo_usuario and nivel_ativo_usuario.pk == nivel.pk %}
+                                                <span class="badge bg-success">Seu Nível Atual</span>
+                                            {% else %}
+                                                <p class="card-text" style="color: #bdc3c7;">(Requer depósito para ativar)</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-center" style="color: #bdc3c7;">Nenhum nível de investimento disponível no momento. Por favor, contacte o suporte.</p>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 mt-5">
+                        <a href="{% url 'deposito' %}" class="btn btn-primary btn-lg" style="background-color: #2ecc71; border-color: #27ae60;">Fazer Depósito para Ativar Nível</a>
+                        <a href="{% url 'menu' %}" class="btn btn-secondary btn-lg" style="background-color: #7f8c8d; border-color: #7f8c8d;">Voltar ao Menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

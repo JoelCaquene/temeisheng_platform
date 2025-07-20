@@ -1,0 +1,59 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Realizar Tarefa - Temeisheng{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm text-center" style="background-color: #34495e; border-radius: 10px; border: 2px solid #2c3e50;">
+                <div class="card-header text-white" style="background-color: #2c3e50; border-bottom: 2px solid #2c3e50;">
+                    <h1 class="mb-0" style="color: #ecf0f1;">Minha Tarefa Diária</h1>
+                </div>
+                <div class="card-body">
+                    {# Exibição de mensagens Django #}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <p class="text-center mb-4" style="color: #bdc3c7;">Realize sua tarefa diária para ganhar Kz!</p>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        {% if saldo.nivel_ativo %}
+                            <h4 style="color: #ecf0f1;">Seu Nível Ativo: <span style="color: #1abc9c;">{{ saldo.nivel_ativo.nome }}</span></h4>
+                            <p style="color: #bdc3c7;">Ganho Diário Estimado: <span style="color: #7f8c8d;">{{ saldo.nivel_ativo.ganho_diario|floatformat:2 }} Kz</span></p>
+                            
+                            {% if tarefa_hoje_realizada %}
+                                <p class="text-warning font-weight-bold mt-3">Você já realizou sua tarefa diária. Volte amanhã para mais ganhos!</p>
+                                <button class="btn btn-warning btn-lg mt-3" disabled>Tarefa Já Realizada Hoje</button>
+                            {% else %}
+                                <p class="text-info font-weight-bold mt-3">Clique no botão abaixo para realizar sua tarefa e adicionar o ganho ao seu saldo!</p>
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-success btn-lg mt-3">Realizar Tarefa Agora</button>
+                                </form>
+                            {% endif %}
+
+                        {% else %}
+                            <h4 style="color: #e74c3c;">Você precisa de um Nível Ativo!</h4>
+                            <p style="color: #bdc3c7;">Para realizar tarefas e ganhar, por favor, faça um depósito para ativar seu nível.</p>
+                            <a href="{% url 'deposito' %}" class="btn btn-primary btn-lg mt-3">Fazer Depósito Agora</a>
+                            <button class="btn btn-secondary btn-lg mt-3" disabled>Realizar Tarefa (Nível Inativo)</button>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'menu' %}" class="btn btn-secondary btn-lg">Voltar ao Menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

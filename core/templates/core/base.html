@@ -1,0 +1,95 @@
+{% load static %} {# Carrega os arquivos estáticos do Django #}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Temeisheng Plataforma{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    {# Link para o Font Awesome para os ícones #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: #2c3e50; /* Azul escuro */
+            color: #ecf0f1; /* Branco suave para o texto */
+            font-family: 'Poppins', sans-serif; /* Fonte moderna */
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .navbar {
+            background-color: #34495e; /* Tom ligeiramente mais claro para a barra de navegação */
+            border-bottom: 2px solid #2c3e50;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .navbar-brand {
+            color: #ecf0f1 !important; /* Cor clara para o nome da marca */
+            font-weight: 600;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+        .navbar-nav .nav-link {
+            color: #ecf0f1 !important;
+            font-weight: 500;
+            margin-left: 15px;
+            transition: color 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #1abc9c !important; /* Cor de destaque ao passar o mouse */
+        }
+        .footer {
+            background-color: #34495e;
+            color: #ecf0f1;
+            padding: 20px 0;
+            margin-top: auto; /* Empurra o footer para o final da página */
+            border-top: 2px solid #2c3e50;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .alert {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'menu' %}">TEMEISHENG</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Sair</a>
+                        </li>
+                    {% else %}
+                        {# Estes links serão gerenciados pela lógica de login/cadastro nas views. #}
+                        {# O usuário só verá o formulário de login/cadastro se não estiver autenticado. #}
+                        {# Portanto, não precisamos de links de Menu, Login, Cadastro aqui na navbar se a intenção é que só apareçam após logout/não-autenticado. #}
+                        {# Se quiser que apareçam sempre, basta descomentar/adicionar. #}
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1">
+        <div class="container mt-4">
+            {% block content %}
+            {# Conteúdo específico de cada página virá aqui #}
+            {% endblock %}
+        </div>
+    </main>
+
+    <footer class="footer text-center mt-auto">
+        <div class="container">
+            <p>&copy; 2024 Temeisheng. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

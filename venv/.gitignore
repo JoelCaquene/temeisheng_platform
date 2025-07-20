@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python/
+env/
+venv/ # Seu ambiente virtual
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.cache
+.pytest_cache/
+htmlcov/
+.ipynb_checkpoints/
+.mypy_cache/
+.dmypy.json
+celerybeat-schedule/
+.vscode/ # Pasta de configuração do VS Code
+
+# Django
+*.log
+*.pot
+*.mo
+*.json
+local_settings.py
+db.sqlite3 # <--- MUITO IMPORTANTE: Seu banco de dados local
+media/ # <--- Opcional: Se você não quiser enviar arquivos de mídia para o Git. No Heroku, eles são armazenados em outro lugar (ex: S3).
+/static/staticfiles/ # A pasta onde collectstatic coleta (não precisa versionar)
+
+# Heroku
+.env

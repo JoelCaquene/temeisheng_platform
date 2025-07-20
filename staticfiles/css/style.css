@@ -1,0 +1,129 @@
+/* temeisheng_platform/static/css/style.css */
+
+/* Cores Principais: */
+/* Fundo principal: #2c3e50 (Dark Blue/Gray) */
+/* Texto claro: #ecf0f1 (Off-white) */
+/* Elementos principais/Chamativos: #3498db (Bright Blue) */
+/* Cores de sucesso/info/destaque: #2ecc71 (Emerald Green), #1abc9c (Turquoise) */
+/* Cores de alerta/erro: #e74c3c (Alizarin Red) */
+/* Cores de card/container: #34495e (Darker Blue/Gray) */
+/* Cores secundárias/neutras: #7f8c8d (Asbestos/Gray) */
+
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    /* As cores de fundo e texto do body já são definidas no base.html (style="background-color: #2c3e50; color: #ecf0f1;"). */
+    /* Este CSS pode ser usado para estilos adicionais que não são sobreescritos pelo inline ou Bootstrap. */
+}
+
+/* Os estilos para header, nav a, main, footer e h1 são largamente controlados pelo Bootstrap e estilos inline no base.html e nos templates. */
+/* No entanto, podemos adicionar algumas regras aqui para garantir consistência ou ajustes finos. */
+
+/* Estilos de link para que não sejam sobreescritos por padrões do navegador em alguns contextos */
+a {
+    color: inherit; /* Herda a cor do elemento pai */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline; /* Adiciona sublinhado ao passar o mouse */
+}
+
+/* Estilo para mensagens Django (success, error, info) */
+/* Certifique-se de que o template base.html ou outros templates renderizem as mensagens com a classe 'messages' e as tags de mensagem como classes (e.g., <ul class="messages"><li class="success">...</li></ul>) */
+.messages {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+    text-align: center; /* Centraliza as mensagens */
+}
+.messages li {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px; /* Cantos mais arredondados */
+    color: white; /* Cor do texto padrão para mensagens */
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para destaque */
+    display: inline-block; /* Para centralizar melhor */
+    max-width: 600px; /* Limita a largura */
+    width: 100%;
+}
+.messages .success {
+    background-color: #2ecc71; /* Emerald Green - para sucesso */
+    border: 1px solid #27ae60;
+}
+.messages .error {
+    background-color: #e74c3c; /* Alizarin Red - para erro */
+    border: 1px solid #c0392b;
+}
+.messages .info {
+    background-color: #3498db; /* Bright Blue - para informação */
+    border: 1px solid #2980b9;
+}
+.messages .warning { /* Adicionando para o caso de mensagens de aviso */
+    background-color: #f1c40f; /* Sunflower Yellow - para aviso */
+    border: 1px solid #f39c12;
+    color: #333; /* Texto escuro para contraste com amarelo */
+}
+
+/* Estilos para formulários, caso não sejam totalmente cobertos pelo Bootstrap ou inline */
+.form-control {
+    background-color: #2c3e50 !important; /* Fundo escuro para inputs */
+    border: 1px solid #3498db !important; /* Borda azul brilhante */
+    color: #ecf0f1 !important; /* Texto claro */
+}
+
+.form-control::placeholder {
+    color: #bdc3c7 !important; /* Cor do placeholder */
+    opacity: 0.8;
+}
+
+.form-control:focus {
+    background-color: #2c3e50 !important;
+    border-color: #3498db !important;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25) !important; /* Brilho ao focar */
+}
+
+.form-label {
+    color: #ecf0f1; /* Cor do label */
+}
+
+.btn {
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Geralmente as cores dos botões são definidas inline ou por classes Bootstrap, mas aqui estão alguns overrides se necessário */
+.btn-primary {
+    background-color: #3498db !important;
+    border-color: #3498db !important;
+}
+.btn-primary:hover {
+    background-color: #2980b9 !important;
+    border-color: #2980b9 !important;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.5) !important;
+}
+
+.btn-secondary {
+    background-color: #7f8c8d !important;
+    border-color: #7f8c8d !important;
+}
+.btn-secondary:hover {
+    background-color: #6c7a89 !important;
+    border-color: #6c7a89 !important;
+    box-shadow: 0 0 0 0.25rem rgba(127, 140, 141, 0.25) !important;
+}
+
+/* Estilos para links de navegação dentro do header, caso o Bootstrap não seja suficiente */
+header .nav-link {
+    color: #ecf0f1 !important; /* Certifica-se que os links da nav sejam brancos */
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+header .nav-link:hover {
+    color: #3498db !important; /* Cor ao passar o mouse */
+}

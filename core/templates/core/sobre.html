@@ -1,0 +1,57 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm" style="background-color: #34495e; border-radius: 10px; border: 2px solid #2c3e50;">
+                <div class="card-header text-white text-center" style="background-color: #2c3e50; border-bottom: 2px solid #2c3e50;">
+                    <h3 class="mb-0" style="color: #ecf0f1;">{{ titulo }}</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead text-center mb-4" style="color: #bdc3c7;">{{ introducao }}</p>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h5 class="text-white">Nossa História e Origem (TEMEISHENG Global)</h5>
+                        <p style="color: #bdc3c7;"><strong>Origem:</strong> {{ resumo_historia.origem }}</p>
+                        <p style="color: #bdc3c7;"><strong>Objetivo:</strong> {{ resumo_historia.objetivo }}</p>
+                    </div>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h5 class="text-white">TEMEISHENG em Angola - Nosso Compromisso</h5>
+                        <p style="color: #bdc3c7;"><strong>Surgimento em Angola:</strong> {{ historia_angola.surgimento }}</p>
+                        <p style="color: #bdc3c7;"><strong>Duração no Mercado de Investimento Online:</strong> {{ historia_angola.duracao_mercado }}</p>
+                        <p style="color: #bdc3c7;"><strong>Contrato com o Cliente:</strong> {{ historia_angola.contrato_cliente }}</p>
+                    </div>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h5 class="text-white">Canais de Atendimento e Suporte</h5>
+                        {% if whatsapp_numero %}
+                            <p style="color: #bdc3c7;"><strong>WhatsApp de Suporte:</strong> <a href="https://wa.me/{{ whatsapp_numero }}" target="_blank" style="color: #2ecc71;">{{ whatsapp_numero }}</a></p>
+                        {% endif %}
+                        {% if telegram_numero %}
+                            <p style="color: #bdc3c7;"><strong>Telegram de Suporte:</strong> <a href="https://t.me/{{ telegram_numero }}" target="_blank" style="color: #3498db;">{{ telegram_numero }}</a></p>
+                        {% endif %}
+                        {% if whatsapp_grupo_link %}
+                            <p style="color: #bdc3c7;"><strong>Grupo WhatsApp:</strong> <a href="{{ whatsapp_grupo_link }}" target="_blank" style="color: #2ecc71;">Acesse nosso grupo no WhatsApp</a></p>
+                        {% endif %}
+                        {% if telegram_grupo_link %}
+                            <p style="color: #bdc3c7;"><strong>Grupo Telegram:</strong> <a href="{{ telegram_grupo_link }}" target="_blank" style="color: #3498db;">Acesse nosso grupo no Telegram</a></p>
+                        {% endif %}
+                        {% if not whatsapp_numero and not telegram_numero and not whatsapp_grupo_link and not telegram_grupo_link %}
+                            <p style="color: #bdc3c7;">Informações de contato e suporte não disponíveis no momento.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'menu' %}" class="btn btn-secondary btn-lg" style="background-color: #7f8c8d; border-color: #7f8c8d;">Voltar ao Menu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

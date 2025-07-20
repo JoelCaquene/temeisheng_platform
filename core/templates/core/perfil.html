@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Perfil - Temeisheng{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm" style="background-color: #34495e; border-radius: 10px; border: 2px solid #2c3e50;">
+                <div class="card-header text-white text-center" style="background-color: #2c3e50; border-bottom: 2px solid #2c3e50;">
+                    <h3 class="mb-0" style="color: #ecf0f1;">Meu Perfil</h3>
+                </div>
+                <div class="card-body text-center">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <h5 style="color: #ecf0f1;">Nome: <span style="color: #1abc9c;">{{ user.first_name|default:"Não Definido" }}</span></h5>
+                        <p style="color: #bdc3c7;">Número de Telefone: <span style="color: #ecf0f1;">{{ user.phone_number }}</span></p>
+                        <p style="color: #bdc3c7;">Nível Atual: <span style="color: #1abc9c;">{% if saldo.nivel_ativo %}{{ saldo.nivel_ativo.nome }}{% else %}Nenhum{% endif %}</span></p>
+                        <p style="color: #bdc3c7;">Data de Cadastro: <span style="color: #ecf0f1;">{{ user.date_joined|date:"d/m/Y H:i" }}</span></p>
+                    </div>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h5 class="text-white">Informações de Saldo</h5>
+                        <p style="color: #bdc3c7;">Saldo Acumulado: <span style="color: #2ecc71;">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
+                        <p style="color: #bdc3c7;">Saldo de Subsídio: <span style="color: #2ecc71;">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
+                        <p style="color: #bdc3c7;">Total Sacado: <span style="color: #e74c3c;">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
+                    </div>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h5 class="text-white">Dados Bancários para Saque (Padrão)</h5>
+                        {# Aqui, usaremos os campos que VOCÊ ADICIONAR ao SaldoUsuario para armazenar os dados bancários padrão #}
+                        {# Por enquanto, vou usar placeholders com base na sua descrição #}
+                        {% if saldo.banco_padrao_saque and saldo.iban_padrao_saque %} {# Esses campos precisam ser adicionados ao seu models.py no SaldoUsuario #}
+                            <p style="color: #bdc3c7;">Banco: <span style="color: #ecf0f1;">{{ saldo.banco_padrao_saque }}</span></p>
+                            <p style="color: #bdc3c7;">IBAN: <span style="color: #ecf0f1;">{{ saldo.iban_padrao_saque }}</span></p>
+                        {% else %}
+                            <p style="color: #bdc3c7;">Nenhum dado bancário padrão configurado. Edite seu perfil para adicioná-los.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'alterar_senha' %}" class="btn btn-outline-info btn-lg" style="color: #3498db; border-color: #3498db;">
+                            <i class="fas fa-key me-2"></i>Alterar Senha
+                        </a>
+                        <a href="{% url 'update_profile' %}" class="btn btn-outline-secondary btn-lg" style="color: #bdc3c7; border-color: #bdc3c7;">
+                            <i class="fas fa-user-edit me-2"></i>Editar Perfil
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-danger btn-lg" style="background-color: #e74c3c; border-color: #c0392b;">
+                            <i class="fas fa-sign-out-alt me-2"></i>Sair
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

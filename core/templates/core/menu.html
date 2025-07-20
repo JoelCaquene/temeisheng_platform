@@ -1,0 +1,96 @@
+{% extends 'core/base.html' %}
+{% load static %} {# ESSA LINHA É CRÍTICA E DEVE ESTAR NO TOPO #}
+
+{% block title %}Menu Principal - Temeisheng{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-sm text-center" style="background-color: #34495e; border-radius: 10px; border: 2px solid #2c3e50;">
+                <div class="card-header text-white" style="background-color: #2c3e50; border-bottom: 2px solid #2c3e50;">
+                    <h1 class="mb-0" style="color: #ecf0f1;">Bem-vindo(a) ao Menu Principal!</h1>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <p class="text-center mb-4" style="color: #bdc3c7;">Aqui você verá seu saldo, nível, e outras informações.</p>
+
+                    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+                        <div class="col">
+                            <a href="{% url 'deposito' %}" class="btn btn-success w-100 py-3 d-flex align-items-center justify-content-center" style="background-color: #2ecc71; border-color: #27ae60; font-weight: bold; font-size: 1.1em; border-radius: 8px;">
+                                <i class="fas fa-wallet me-2"></i>Depósito
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'saque' %}" class="btn btn-danger w-100 py-3 d-flex align-items-center justify-content-center" style="background-color: #e74c3c; border-color: #c0392b; font-weight: bold; font-size: 1.1em; border-radius: 8px;">
+                                <i class="fas fa-money-bill-wave me-2"></i>Saque
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'tarefa' %}" class="btn btn-warning w-100 py-3 d-flex align-items-center justify-content-center" style="background-color: #f39c12; border-color: #e67e22; font-weight: bold; font-size: 1.1em; border-radius: 8px;">
+                                <i class="fas fa-tasks me-2"></i>Tarefa
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'nivel' %}" class="btn btn-purple w-100 py-3 d-flex align-items-center justify-content-center" style="background-color: #9b59b6; border-color: #8e44ad; font-weight: bold; font-size: 1.1em; border-radius: 8px;">
+                                <i class="fas fa-chart-line me-2"></i>Nível
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'minha_equipe' %}" class="btn btn-info w-100 py-3 d-flex align-items-center justify-content-center" style="background-color: #3498db; border-color: #2980b9; font-weight: bold; font-size: 1.1em; border-radius: 8px;">
+                                <i class="fas fa-users me-2"></i>Equipe
+                            </a>
+                        </div>
+                        <div class="col">
+                            <a href="{% url 'perfil' %}" class="btn btn-orange w-100 py-3 d-flex align-items-center justify-content-center" style="background-color: #e67e22; border-color: #d35400; font-weight: bold; font-size: 1.1em; border-radius: 8px;">
+                                <i class="fas fa-user-circle me-2"></i>Perfil
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h4 style="color: #ecf0f1;">Seu Saldo:</h4>
+                        <p style="color: #bdc3c7;">Saldo Acumulado: <span style="color: #2ecc71;">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
+                        <p style="color: #bdc3c7;">Saldo de Subsídio: <span style="color: #2ecc71;">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
+                        <p style="color: #bdc3c7;">Total Sacado: <span style="color: #e74c3c;">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
+                        <p style="color: #bdc3c7;">Seu Nível Ativo: <span style="color: #1abc9c;">{% if saldo.nivel_ativo %}{{ saldo.nivel_ativo.nome }}{% else %}Nenhum{% endif %}</span></p>
+                        {% if not saldo.nivel_ativo %}
+                            <p style="color: #bdc3c7;">Faça um depósito para ativar seu nível e começar a ganhar!</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
+                        <h4 class="text-white">Exibir Imagens da Plataforma</h4>
+                        <p class="text-muted" style="color: #bdc3c7;">Adicione suas imagens da plataforma aqui.</p>
+                        <div class="row justify-content-center mt-3">
+                            <div class="col-4">
+                                {# Caminhos ajustados para .jpg #}
+                                <img src="{% static 'img/placeholder1.jpg' %}" alt="Imagem 1" class="img-fluid rounded shadow-sm" style="border: 2px solid #3498db;">
+                            </div>
+                            <div class="col-4">
+                                <img src="{% static 'img/placeholder2.jpg' %}" alt="Imagem 2" class="img-fluid rounded shadow-sm" style="border: 2px solid #e74c3c;">
+                            </div>
+                            <div class="col-4">
+                                <img src="{% static 'img/placeholder3.jpg' %}" alt="Imagem 3" class="img-fluid rounded shadow-sm" style="border: 2px solid #f39c12;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'sobre' %}" class="btn btn-info btn-lg" style="background-color: #3498db; border-color: #2980b9;">Sobre</a>
+                        <a href="{% url 'logout' %}" class="btn btn-danger btn-lg" style="background-color: #e74c3c; border-color: #c0392b;">Sair</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
