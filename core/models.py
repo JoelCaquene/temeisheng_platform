@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.utils import timezone
+import uuid # <--- ADIÇÃO: Importar uuid para gerar códigos únicos
 
 # 1. Gerenciador de Usuários Personalizado
 class UserManager(BaseUserManager):
@@ -33,6 +34,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True, verbose_name="Ativo")
     is_staff = models.BooleanField(default=False, verbose_name="Membro da Equipe") # Para acesso ao admin
 
+    # --- ADIÇÕES PARA FUNCIONALIDADE DE CONVITE ---
+    # Código de convite único para este usuário
+    referral_code = models.CharField(max_length=50, unique=True, blank=True, null=True, verbose_name="Código de Convite")
+    # Quem convidou este usuário (se foi convidado)
+    referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='referred_users', verbose_name="Convidado Por")
+    # FIM DAS ADIÇÕES
+
     objects = UserManager()
 
     USERNAME_FIELD = 'phone_number' # Usaremos o número de telefone para login
@@ -44,6 +52,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
+
+    # Método para gerar o referral_code se não existir (será chamado na criação ou primeiro acesso)
+    def save(self, *args, **kwargs):
+        if not self.referral_code:
+            self.referral_code = str(uuid.uuid4()).replace('-', '')[:10].upper() # Gera um UUID e pega os primeiros 10 caracteres
+        super().save(*args, **kwargs)
+
 
 # 3. Modelo de Nível (editável pelo administrador)
 class Nivel(models.Model):
@@ -84,7 +99,7 @@ class Deposito(models.Model):
     valor = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Valor Depositado")
     comprovativo = models.ImageField(upload_to='comprovativos_depositos/', verbose_name="Comprovativo")
     coordenada_bancaria_usada = models.ForeignKey(CoordenadaBancaria, on_delete=models.SET_NULL, null=True, blank=True, 
-                                                    verbose_name="Coordenada Bancária Usada") # NOVO CAMPO
+                                                     verbose_name="Coordenada Bancária Usada")
     data_solicitacao = models.DateTimeField(auto_now_add=True, verbose_name="Data de Solicitação")
     aprovado = models.BooleanField(default=False, verbose_name="Aprovado")
     data_aprovacao = models.DateTimeField(null=True, blank=True, verbose_name="Data de Aprovação")
@@ -105,9 +120,6 @@ class Saque(models.Model):
     data_solicitacao = models.DateTimeField(auto_now_add=True, verbose_name="Data de Solicitação")
     aprovado = models.BooleanField(default=False, verbose_name="Aprovado")
     data_aprovacao = models.DateTimeField(null=True, blank=True, verbose_name="Data de Aprovação")
-    # Campos para os dados bancários do usuário (para onde sacar) - Removidos daqui, agora no SaldoUsuario
-    # nome_banco_cliente = models.CharField(max_length=100, blank=True, null=True, verbose_name="Banco do Cliente")
-    # iban_cliente = models.CharField(max_length=34, blank=True, null=True, verbose_name="IBAN do Cliente")
 
     def __str__(self):
         status = "Aprovado" if self.aprovado else "Pendente"
@@ -159,7 +171,7 @@ class SaldoUsuario(models.Model):
     total_sacado = models.DecimalField(max_digits=12, decimal_places=2, default=0.00, verbose_name="Total Sacado")
     nivel_ativo = models.ForeignKey(Nivel, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Nível Ativo")
     ultimo_deposito_aprovado_valor = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Último Depósito Aprovado")
-    ultimo_saque_solicitado = models.DateTimeField(null=True, blank=True, verbose_name="Último Saque Solicitado") # Para controle de saque diário
+    ultimo_saque_solicitado = models.DateTimeField(null=True, blank=True, verbose_name="Último Saque Solicitado")
 
     # NOVOS CAMPOS PARA DADOS BANCÁRIOS PADRÃO DO USUÁRIO
     banco_padrao_saque = models.CharField(max_length=100, blank=True, null=True, verbose_name="Banco Padrão para Saque")
