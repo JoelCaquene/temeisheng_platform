@@ -154,7 +154,7 @@ def deposito_view(request):
 @login_required
 def saque_view(request):
     user_saldo = get_object_or_404(SaldoUsuario, usuario=request.user)
-    # Filtra saques recentes. Use 'aprovado=False' para saques pendentes se o modelo Saque tiver apenas 'aprovado' (boolean)
+    # Filtra saques recentes.
     saques_recentes = Saque.objects.filter(usuario=request.user).order_by('-data_solicitacao')[:5]
 
     # Puxa os dados bancários do SaldoUsuario (assumindo que você já adicionou banco_padrao_saque e iban_padrao_saque lá)
@@ -163,7 +163,8 @@ def saque_view(request):
 
     # Alternativa: Puxar do último saque aprovado se o SaldoUsuario não tiver esses campos preenchidos
     if not banco_cliente_saque and not iban_cliente_saque:
-        last_approved_saque = Saque.objects.filter(usuario=request.user, aprovado=True).order_by('-data_aprovacao').first()
+        # CORREÇÃO APLICADA AQUI: 'aprovado=True' mudou para 'status='aprovado''
+        last_approved_saque = Saque.objects.filter(usuario=request.user, status='aprovado').order_by('-data_aprovacao').first()
         if last_approved_saque:
             banco_cliente_saque = last_approved_saque.nome_banco_cliente
             iban_cliente_saque = last_approved_saque.iban_cliente
@@ -183,8 +184,8 @@ def saque_view(request):
                 return redirect('saque')
 
             today = timezone.localdate()
-            # Verifica se já existe um saque PENDENTE para o dia de hoje
-            saque_pendente_hoje = Saque.objects.filter(usuario=request.user, data_solicitacao__date=today, aprovado=False).exists()
+            # CORREÇÃO APLICADA AQUI: 'aprovado=False' mudou para 'status='pendente''
+            saque_pendente_hoje = Saque.objects.filter(usuario=request.user, data_solicitacao__date=today, status='pendente').exists()
             if saque_pendente_hoje:
                 messages.warning(request, 'Você já tem um saque pendente hoje. Aguarde a aprovação do saque anterior.')
                 return redirect('saque')
@@ -235,7 +236,8 @@ def saque_view(request):
         'saques_recentes': saques_recentes,
         'banco_cliente_saque': banco_cliente_saque,
         'iban_cliente_saque': iban_cliente_saque,
-        'last_saque_data': Saque.objects.filter(usuario=request.user, aprovado=True).order_by('-data_aprovacao').first(),
+        # CORREÇÃO APLICADA AQUI: 'aprovado=True' mudou para 'status='aprovado''
+        'last_saque_data': Saque.objects.filter(usuario=request.user, status='aprovado').order_by('-data_aprovacao').first(),
     }
     return render(request, 'core/saque.html', context)
 
@@ -332,7 +334,8 @@ def perfil_view(request):
     context = {
         'user': request.user,
         'saldo': user_saldo, # Passa o objeto SaldoUsuario completo
-        'last_saque': Saque.objects.filter(usuario=request.user, aprovado=True).order_by('-data_aprovacao').first(),
+        # CORREÇÃO APLICADA AQUI: 'aprovado=True' mudou para 'status='aprovado''
+        'last_saque': Saque.objects.filter(usuario=request.user, status='aprovado').order_by('-data_aprovacao').first(),
     }
     return render(request, 'core/perfil.html', context)
 
