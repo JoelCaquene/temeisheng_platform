@@ -11,6 +11,7 @@
 from pathlib import Path
 import os
 import dj_database_url
+import logging # Adicionar esta linha para poder configurar loggers no código
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,7 +24,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ojj(_wu^d*#5#-c%wxeht=@#pgm0pdr0m&4doi^r_l&+nu%sf_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False # Mantenha como False para produção!
+DEBUG = True # <--- MUITO IMPORTANTE: Defina como True para depuração no Heroku TEMPORARIAMENTE.
+              # Lembre-se de mudar para False em produção!
 
 # CORREÇÃO: Adicionando o domínio completo do Heroku aos ALLOWED_HOSTS
 ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1', 'temeisheng-service-bb7c9e38646d.herokuapp.com']
@@ -58,12 +60,11 @@ ROOT_URLCONF = 'temeisheng_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # DIRS agora inclui a pasta de templates base do projeto, se você a criar no futuro
-        'DIRS': [BASE_DIR / 'templates'], # Pode ser útil para templates globais
-        'APP_DIRS': True, # Permite que o Django procure templates dentro das pastas 'templates' de cada app
+        'DIRS': [BASE_DIR / 'templates'],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug', # Adicionado para debug
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -156,15 +157,7 @@ LOGOUT_REDIRECT_URL = 'login' # Nome da URL para redirecionar após logout bem-s
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configurações para envio de e-mail (para redefinição de senha, etc.)
-# Em desenvolvimento, o Django pode imprimir e-mails no console ou usar um servidor local.
-# Para produção, você configuraria um servidor SMTP real.
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Envia e-mails para o console (bom para dev)
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.seuservidor.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'seu_email@dominio.com'
-# EMAIL_HOST_PASSWORD = 'sua_senha_de_email'
 
 
 # ********** INÍCIO DA ADIÇÃO/MODIFICAÇÃO: Configuração de Logging para Heroku **********
@@ -183,7 +176,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG', # Manter como DEBUG para capturar tudo no console
+            'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
@@ -191,30 +184,34 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver todo o logging do Django
-            'propagate': False,
+            'level': 'DEBUG', # <--- DEBUG para ver TODO o log do Django
+            'propagate': True, # <--- MUDEI PARA TRUE: permite que os logs subam para o logger root
         },
         'django.request': {
             'handlers': ['console'],
-            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver detalhes de requisições (erros e sucesso)
-            'propagate': False,
+            'level': 'DEBUG', # <--- DEBUG para ver detalhes de requisições
+            'propagate': True, # <--- MUDEI PARA TRUE
         },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver queries de banco de dados
-            'propagate': False,
+            'level': 'DEBUG', # <--- DEBUG para ver queries de banco de dados
+            'propagate': True, # <--- MUDEI PARA TRUE
         },
         'django.contrib.auth.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver detalhes de autenticação
-            'propagate': False,
+            'level': 'DEBUG', # <--- DEBUG para autenticação
+            'propagate': True, # <--- MUDEI PARA TRUE
         },
-        'core': { # <--- NOVO: Logger para o seu app 'core'
+        'core': {
             'handlers': ['console'],
-            'level': 'DEBUG', # Isso é crucial se o erro estiver no seu próprio código do app 'core'
-            'propagate': False,
+            'level': 'DEBUG', # <--- DEBUG para seu app 'core'
+            'propagate': True, # <--- MUDEI PARA TRUE
         },
-        # Adicione outros loggers específicos se você tiver outros apps ou necessidades
+        '': { # <--- NOVO: Logger root (captura tudo que não é explicitamente tratado)
+            'handlers': ['console'],
+            'level': 'DEBUG', # <--- Nível DEBUG para o logger root
+            'propagate': True,
+        }
     }
 }
 # ********** FIM DA ADIÇÃO/MODIFICAÇÃO: Configuração de Logging para Heroku **********
