@@ -154,6 +154,7 @@ def deposito_view(request):
 @login_required
 def saque_view(request):
     user_saldo = get_object_or_404(SaldoUsuario, usuario=request.user)
+    # Filtra saques recentes. Use 'aprovado=False' para saques pendentes se o modelo Saque tiver apenas 'aprovado' (boolean)
     saques_recentes = Saque.objects.filter(usuario=request.user).order_by('-data_solicitacao')[:5]
 
     # Puxa os dados bancários do SaldoUsuario (assumindo que você já adicionou banco_padrao_saque e iban_padrao_saque lá)
@@ -182,15 +183,18 @@ def saque_view(request):
                 return redirect('saque')
 
             today = timezone.localdate()
-            saque_hoje = Saque.objects.filter(usuario=request.user, data_solicitacao__date=today, aprovado=False).exists()
-            if saque_hoje:
+            # Verifica se já existe um saque PENDENTE para o dia de hoje
+            saque_pendente_hoje = Saque.objects.filter(usuario=request.user, data_solicitacao__date=today, aprovado=False).exists()
+            if saque_pendente_hoje:
                 messages.warning(request, 'Você já tem um saque pendente hoje. Aguarde a aprovação do saque anterior.')
                 return redirect('saque')
             
+            # Configurações de fuso horário e horário de operação
+            # `timezone.get_fixed_timezone` é melhor para fusos horários fixos como UTC+1
             luanda_tz = timezone.get_fixed_timezone(timedelta(hours=1)) 
             now_luanda = timezone.localtime(timezone.now(), timezone=luanda_tz)
             
-            is_weekday_or_saturday = now_luanda.weekday() < 6 # 0=Segunda, 5=Sábado
+            is_weekday_or_saturday = now_luanda.weekday() < 6 # 0=Segunda, ..., 4=Sexta, 5=Sábado, 6=Domingo
             is_within_hours = time(9,0) <= now_luanda.time() <= time(18,0)
 
             if not (is_weekday_or_saturday and is_within_hours):
@@ -264,7 +268,7 @@ def tarefa_view(request):
             else:
                 messages.info(request, 'Você já realizou sua tarefa diária. Volte amanhã para mais ganhos!')
         else:
-             messages.warning(request, 'Você precisa ter um nível ativo para realizar tarefas e ganhar. Faça um depósito para ativar seu nível.')
+           messages.warning(request, 'Você precisa ter um nível ativo para realizar tarefas e ganhar. Faça um depósito para ativar seu nível.')
     
     context = {
         'saldo': user_saldo,
@@ -308,14 +312,16 @@ def minha_equipe_view(request):
             'first_name': convidado_user.first_name,
             'data_convite': convite_obj.data_convite if convite_obj else convidado_user.date_joined, # Fallback para data de registro se Convite não existir
             'nivel_ativo': convidado_user.saldo.nivel_ativo.nome if convidado_user.saldo and convidado_user.saldo.nivel_ativo else 'Nenhum',
-            'tem_nivel_ativo': convidado_user.saldo.nivel_ativo is not None if convidado_user.saldo else False,
+            # Modificado para passar 'nivel_expirado' diretamente do saldo, se existir. 
+            # Isso é mais consistente com a lógica que você pode ter no template.
+            'nivel_expirado': convidado_user.saldo.nivel_expirado if convidado_user.saldo else True, 
             'subsidy_granted': convite_obj.subsidy_granted if convite_obj else False,
         })
     
     context = {
         'link_convite': link_convite,
-        'equipe_detalhes': equipe_detalhes,
-        'total_convidados': convidados_diretos.count(), # Adicionado para exibir o total de convidados
+        'equipe': equipe_detalhes, # Renomeado de 'equipe_detalhes' para 'equipe' para corresponder ao uso comum nos templates que forneci.
+        'total_convidados': convidados_diretos.count(), 
     }
     return render(request, 'core/minha_equipe.html', context)
 
@@ -338,8 +344,8 @@ def update_profile_view(request):
         first_name = request.POST.get('first_name', '').strip()
         # Campos de banco e IBAN para serem editados no perfil
         # Certifique-se de que os nomes dos campos no seu HTML (input `name`) correspondem a estes
-        banco_cliente = request.POST.get('banco_padrao_saque', '').strip() # Corrigido para nome esperado do campo no model
-        iban_cliente = request.POST.get('iban_padrao_saque', '').strip()   # Corrigido para nome esperado do campo no model
+        banco_cliente = request.POST.get('banco_padrao_saque', '').strip() 
+        iban_cliente = request.POST.get('iban_padrao_saque', '').strip() 
 
         # Atualiza o nome
         if first_name:
@@ -350,7 +356,7 @@ def update_profile_view(request):
         # Atualiza os dados bancários no SaldoUsuario
         # Assumimos que 'banco_padrao_saque' e 'iban_padrao_saque' já foram adicionados ao modelo SaldoUsuario
         user_saldo.banco_padrao_saque = banco_cliente 
-        user_saldo.iban_padrao_saque = iban_cliente   
+        user_saldo.iban_padrao_saque = iban_cliente 
         user_saldo.save() 
 
         request.user.save() 
@@ -386,6 +392,7 @@ class CustomPasswordResetView(PasswordResetView):
             try:
                 user_instance = User.objects.get(phone_number=phone_number)
                 request.POST._mutable = True
+                # Converte o número de telefone para um formato de e-mail fictício para usar o sistema de redefinição de senha do Django
                 request.POST['email'] = f"{phone_number}@temeisheng.com" 
                 request.POST._mutable = False
                 
@@ -418,7 +425,7 @@ def sobre_view(request):
         'introducao': "A TEMEISHENG é uma empresa de tecnologia que se destaca na fabricação de sistemas de áudio.",
         'resumo_historia': {
             'origem': "A TEMEISHENG foi fundada em 1999 na China, especificamente em Guangzhou.",
-            'objetivo': "O principal objetivo da TEMEishENG é a concepção, fabricação e comercialização de sistemas de áudio, com foco em oferecer produtos de qualidade e satisfazer as necessidades dos clientes. Eles são conhecidos por sua expertise em caixas de som portáteis com bateria.",
+            'objetivo': "O principal objetivo da TEMEISHENG é a concepção, fabricação e comercialização de sistemas de áudio, com foco em oferecer produtos de qualidade e satisfazer as necessidades dos clientes. Eles são conhecidos por sua expertise em caixas de som portáteis com bateria.",
         },
         'historia_angola': {
             'surgimento': "Nossa empresa em Angola surgiu em 21 de Julho de 2025.",

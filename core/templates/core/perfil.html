@@ -31,15 +31,15 @@
                     <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
                         <h5 class="text-white">Informações de Saldo</h5>
                         <p style="color: #bdc3c7;">Saldo Acumulado: <span style="color: #2ecc71;">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
-                        <p style="color: #bdc3c7;">Saldo de Subsídio: <span style="color: #2ecc71;">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
+                        {# CORREÇÃO AQUI: 'saldo_subsidio' alterado para 'saldo_subsidy' #}
+                        <p style="color: #bdc3c7;">Saldo de Subsídio: <span style="color: #2ecc71;">{{ saldo.saldo_subsidy|floatformat:2 }} Kz</span></p>
                         <p style="color: #bdc3c7;">Total Sacado: <span style="color: #e74c3c;">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
                     </div>
 
                     <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
                         <h5 class="text-white">Dados Bancários para Saque (Padrão)</h5>
-                        {# Aqui, usaremos os campos que VOCÊ ADICIONAR ao SaldoUsuario para armazenar os dados bancários padrão #}
-                        {# Por enquanto, vou usar placeholders com base na sua descrição #}
-                        {% if saldo.banco_padrao_saque and saldo.iban_padrao_saque %} {# Esses campos precisam ser adicionados ao seu models.py no SaldoUsuario #}
+                        {# A lógica abaixo está correta, usando os campos banco_padrao_saque e iban_padrao_saque do modelo SaldoUsuario #}
+                        {% if saldo.banco_padrao_saque and saldo.iban_padrao_saque %}
                             <p style="color: #bdc3c7;">Banco: <span style="color: #ecf0f1;">{{ saldo.banco_padrao_saque }}</span></p>
                             <p style="color: #bdc3c7;">IBAN: <span style="color: #ecf0f1;">{{ saldo.iban_padrao_saque }}</span></p>
                         {% else %}

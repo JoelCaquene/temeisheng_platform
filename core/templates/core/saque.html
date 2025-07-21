@@ -26,7 +26,8 @@
                     <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
                         <h5 class="text-white">Seus Saldos Atuais:</h5>
                         <p style="color: #bdc3c7;">Saldo Acumulado: <span style="color: #2ecc71;">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
-                        <p style="color: #bdc3c7;">Saldo de Subsídio: <span style="color: #2ecc71;">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
+                        {# CORREÇÃO AQUI: 'saldo_subsidio' alterado para 'saldo_subsidy' #}
+                        <p style="color: #bdc3c7;">Saldo de Subsídio: <span style="color: #2ecc71;">{{ saldo.saldo_subsidy|floatformat:2 }} Kz</span></p>
                         <p style="color: #bdc3c7;">Total Sacado: <span style="color: #e74c3c;">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
                     </div>
 
@@ -71,11 +72,12 @@
                                     <span>
                                         Valor: <strong style="color: #1abc9c;">{{ saque.valor|floatformat:2 }} Kz</strong><br>
                                         Status: 
-                                        {% if saque.aprovado %}
+                                        {# CORREÇÃO AQUI: Usando 'saque.status' diretamente, pois 'aprovado' e 'rejeitado' não são campos do modelo Saque #}
+                                        {% if saque.status == 'aprovado' %}
                                             <span class="badge bg-success">Aprovado</span>
-                                        {% elif saque.rejeitado %}
+                                        {% elif saque.status == 'rejeitado' %}
                                             <span class="badge bg-danger">Rejeitado</span>
-                                        {% else %}
+                                        {% else %} {# Default para 'pendente' #}
                                             <span class="badge bg-warning text-dark">Pendente</span>
                                         {% endif %}<br>
                                         Data: {{ saque.data_solicitacao|date:"d/m/Y H:i" }}
