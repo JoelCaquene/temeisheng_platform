@@ -68,16 +68,16 @@ class DepositoForm(forms.ModelForm):
 
     class Meta:
         model = Deposito
-        # CORREÇÃO CRÍTICA AQUI: Mudado 'comprovativo' para 'comprovante_pix'
+        # CORREÇÃO APLICADA AQUI: O campo 'comprovante_pix' foi incluído novamente
         fields = ['valor', 'comprovante_pix', 'coordenada_bancaria_usada', 'nivel_ativar'] 
         widgets = {
             'valor': forms.NumberInput(attrs={'placeholder': 'Ex: 1500.00', 'class': 'form-control'}),
-            # CORREÇÃO CRÍTICA AQUI: Mudado 'comprovativo' para 'comprovante_pix'
+            # CORREÇÃO APLICADA AQUI: 'comprovante_pix' agora usa FileInput
             'comprovante_pix': forms.FileInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'valor': 'Digite o Valor do Depósito (KZ):',
-            # CORREÇÃO CRÍTICA AQUI: Mudado 'comprovativo' para 'comprovante_pix'
+            # CORREÇÃO APLICADA AQUI: Label para 'comprovante_pix'
             'comprovante_pix': 'Carregar Comprovativo:',
         }
 
