@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-ojj(_wu^d*#5#-c%wxeht=@#pgm0pdr0m&4doi^r_l&+nu%sf_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = False # Mantenha como False para produção!
 
 # CORREÇÃO: Adicionando o domínio completo do Heroku aos ALLOWED_HOSTS
 ALLOWED_HOSTS = ['.herokuapp.com', '127.0.0.1', 'temeisheng-service-bb7c9e38646d.herokuapp.com']
@@ -167,7 +167,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Envia e-mails
 # EMAIL_HOST_PASSWORD = 'sua_senha_de_email'
 
 
-# ********** INÍCIO DA ADIÇÃO: Configuração de Logging para Heroku **********
+# ********** INÍCIO DA ADIÇÃO/MODIFICAÇÃO: Configuração de Logging para Heroku **********
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -183,7 +183,7 @@ LOGGING = {
     },
     'handlers': {
         'console': {
-            'level': 'DEBUG', # Alterado para 'DEBUG' para obter o máximo de detalhes
+            'level': 'DEBUG', # Manter como DEBUG para capturar tudo no console
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
@@ -191,34 +191,33 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver todo o logging do Django
             'propagate': False,
         },
         'django.request': {
             'handlers': ['console'],
-            'level': 'ERROR', # Apenas erros de requisição
+            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver detalhes de requisições (erros e sucesso)
             'propagate': False,
         },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver queries de banco de dados
             'propagate': False,
         },
         'django.contrib.auth.backends': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG', # <--- ALTERADO: Para DEBUG para ver detalhes de autenticação
             'propagate': False,
         },
-        # Você pode adicionar um logger para o seu próprio aplicativo, se necessário.
-        # Por exemplo, se seu app principal se chama 'core':
-        # 'core': {
-        #     'handlers': ['console'],
-        #     'level': 'DEBUG', # 'DEBUG' para ver detalhes do seu código
-        #     'propagate': False,
-        # },
+        'core': { # <--- NOVO: Logger para o seu app 'core'
+            'handlers': ['console'],
+            'level': 'DEBUG', # Isso é crucial se o erro estiver no seu próprio código do app 'core'
+            'propagate': False,
+        },
+        # Adicione outros loggers específicos se você tiver outros apps ou necessidades
     }
 }
-# ********** FIM DA ADIÇÃO: Configuração de Logging para Heroku **********
+# ********** FIM DA ADIÇÃO/MODIFICAÇÃO: Configuração de Logging para Heroku **********
 
 
 # <--- ADIÇÃO: Configurações do django-heroku (coloque no final do settings.py)
