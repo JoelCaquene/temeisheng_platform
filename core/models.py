@@ -1,13 +1,51 @@
-# core/models.py (Atualizado com saldo_subsidy)
+# core/models.py
 
 import uuid # Importar para gerar UUIDs para referral_code
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager # Importar BaseUserManager
 from django.utils import timezone
 from datetime import timedelta
+from django.utils.translation import gettext_lazy as _ # Adicionado para mensagens de erro traduzíveis
 
 # Campos para validação, se necessário (ex: para números de telefone)
 from django.core.validators import RegexValidator
+
+# NOVO: CustomUserManager para gerenciar a criação de usuários e superusuários
+class CustomUserManager(BaseUserManager):
+    def create_user(self, phone_number, email=None, password=None, **extra_fields):
+        """
+        Cria e salva um Usuário com o número de telefone e senha dados.
+        """
+        if not phone_number:
+            raise ValueError(_('O número de telefone deve ser definido')) #
+        
+        # Garante que o email seja None se estiver vazio, ou normaliza
+        email = self.normalize_email(email) if email else None 
+        
+        user = self.model(phone_number=phone_number, email=email, **extra_fields) #
+        user.set_password(password) #
+        user.save(using=self._db) #
+        return user #
+
+    def create_superuser(self, phone_number, email, password=None, **extra_fields):
+        """
+        Cria e salva um superusuário com o número de telefone e senha dados.
+        """
+        extra_fields.setdefault('is_staff', True) #
+        extra_fields.setdefault('is_superuser', True) #
+        extra_fields.setdefault('is_active', True) # Garante que superusuário esteja ativo
+
+        if extra_fields.get('is_staff') is not True: #
+            raise ValueError(_('Superuser deve ter is_staff=True.')) #
+        if extra_fields.get('is_superuser') is not True: #
+            raise ValueError(_('Superuser deve ter is_superuser=True.')) #
+        
+        # O campo 'email' é obrigatório para o superusuário neste método
+        if not email: #
+            raise ValueError(_('Superuser deve ter um endereço de email.')) #
+
+        return self.create_user(phone_number, email, password, **extra_fields) #
+
 
 class User(AbstractUser):
     # Alterado para usar phone_number como username_field
@@ -15,13 +53,24 @@ class User(AbstractUser):
     phone_number_regex = RegexValidator(regex=r"^\+?1?\d{9,15}$", message="O número de telefone deve ser inserido no formato: '+999999999'. Até 15 dígitos permitidos.")
     phone_number = models.CharField(validators=[phone_number_regex], max_length=17, unique=True, verbose_name="Número de Telefone")
     
+    # Adicionado o campo 'email' explicitamente, já que ele é um REQUIRED_FIELD
+    # No seu 0006_alter_convite_options_and_more.py, o campo 'email' já foi adicionado
+    # como models.EmailField(blank=True, max_length=254, verbose_name='email address')
+    # Mantenha a definição que foi usada na sua migração 0006. Se você o tornou 'unique=True'
+    # em algum ponto, precisará gerar uma nova migração.
+    email = models.EmailField(_("email address"), blank=True, null=True, unique=True) # Adicionado unique=True para email, se for o caso
+
     # Novo campo para o código de convite único
     referral_code = models.CharField(max_length=10, unique=True, blank=True, null=True, verbose_name="Código de Convite")
     # Campo para rastrear quem convidou este usuário
     referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='referred_users', verbose_name="Convidado Por")
 
     USERNAME_FIELD = 'phone_number'
-    REQUIRED_FIELDS = ['first_name'] # Mantém first_name como campo requerido no createsuperuser, se desejar
+    # Adicionado 'email' aos REQUIRED_FIELDS para que seja solicitado no createsuperuser
+    REQUIRED_FIELDS = ['email', 'first_name'] 
+
+    # IMPORTANTE: Conecta o seu CustomUserManager ao seu modelo User
+    objects = CustomUserManager() 
 
     def __str__(self):
         return self.phone_number
