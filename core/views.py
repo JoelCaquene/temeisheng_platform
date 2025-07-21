@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from datetime import timedelta, time
 import random # Para simular a aprovação de depósito
-import hashlib # Para gerar links de convite simples
+# import hashlib # Este módulo não será mais necessário para gerar links de convite, pois o referral_code já é gerado no modelo User
 
 from .forms import UserRegistrationForm, UserLoginForm, DepositoForm, SaqueForm, CustomPasswordChangeForm, CustomSetPasswordForm
 from .models import User, SaldoUsuario, Nivel, Deposito, Saque, TarefaGanho, Convite, CoordenadaBancaria, ConfiguracaoPlataforma
@@ -22,20 +22,32 @@ def cadastro_view(request):
     if request.user.is_authenticated:
         return redirect('menu')
 
-    inviter_phone_from_url = request.GET.get('convidante')
+    # Alterado para buscar 'ref' (referral code) em vez de 'convidante' (phone_number)
+    referral_code_from_url = request.GET.get('ref') 
+    inviter_user = None
+    if referral_code_from_url:
+        try:
+            # Tenta encontrar o usuário pelo referral_code
+            inviter_user = User.objects.get(referral_code=referral_code_from_url)
+        except User.DoesNotExist:
+            messages.warning(request, "Código de convite inválido. Cadastrado sem vínculo.")
 
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            # Lógica para associar o convidado ao convidante
-            if inviter_phone_from_url:
-                try:
-                    inviter_user = User.objects.get(phone_number=inviter_phone_from_url)
-                    Convite.objects.create(convidante=inviter_user, convidado=user)
-                    messages.info(request, f"Você foi cadastrado como convidado de {inviter_phone_from_url}.")
-                except User.DoesNotExist:
-                    messages.warning(request, "Número do convidante não encontrado. Cadastrado sem vínculo.")
+            user = form.save(commit=False) # Não salva ainda para poder setar o referred_by
+            
+            # Lógica para associar o convidado ao convidante usando o campo referred_by do User
+            if inviter_user:
+                user.referred_by = inviter_user # Define quem convidou este usuário
+                messages.info(request, f"Você foi cadastrado como convidado de {inviter_user.phone_number}.")
+            
+            user.save() # Agora salva o usuário com o referred_by
+
+            # Criar o registro de Convite (para histórico e controle de subsídio). 
+            # Isso ainda é necessário para o campo `subsidy_granted` e `data_convite`.
+            if inviter_user:
+                Convite.objects.create(convidante=inviter_user, convidado=user)
             
             # Inicializar SaldoUsuario para o novo usuário
             SaldoUsuario.objects.create(usuario=user)
@@ -51,8 +63,9 @@ def cadastro_view(request):
                         messages.error(request, f'{form.fields[field].label}: {error}')
     else:
         initial_data = {}
-        if inviter_phone_from_url:
-            initial_data['inviter_phone'] = inviter_phone_from_url
+        if referral_code_from_url:
+            # Você pode usar initial_data para preencher um campo oculto ou apenas para referência no template
+            initial_data['referral_code_display'] = referral_code_from_url 
         form = UserRegistrationForm(initial=initial_data)
         
     return render(request, 'core/cadastro.html', {'form': form})
@@ -115,7 +128,7 @@ def deposito_view(request):
                     deposito = form.save(commit=False)
                     deposito.usuario = request.user
                     # O form já está preenchendo coordenada_bancaria_usada e nivel_ativar
-                    deposito.save()
+                    deposito.save() # Salva o depósito. A aprovação e o subsídio serão tratados via signal.
 
                     messages.success(request, 'Seu pedido de depósito foi enviado com sucesso! Será aprovado em 5-15 minutos.')
                     return redirect('menu')
@@ -143,38 +156,19 @@ def saque_view(request):
     user_saldo = get_object_or_404(SaldoUsuario, usuario=request.user)
     saques_recentes = Saque.objects.filter(usuario=request.user).order_by('-data_solicitacao')[:5]
 
-    # Preencher dados bancários do usuário, se existirem no SaldoUsuario ou User
-    # Assumindo que o IBAN e nome do banco serão armazenados em SaldoUsuario ou User.
-    # Por enquanto, vou usar os campos que você tem em Saque para o perfil.
-    # Idealmente, você teria um modelo Profile ou User que armazena os dados bancários.
-    # Para este exemplo, vou assumir que 'nome_banco_cliente' e 'iban_cliente' são os campos de perfil
-    # que o usuário preenche uma vez e são usados para saques.
-    # Adicionando-os diretamente ao modelo User ou SaldoUsuario seria uma boa prática.
-    # Por enquanto, vou buscá-los do último saque aprovado ou do perfil do usuário se você tiver.
-    
-    # Para simplificar, vou assumir que os dados bancários do usuário (nome_banco, iban)
-    # estão diretamente no objeto SaldoUsuario.
-    # Se você quiser que o usuário edite isso no perfil, eles precisarão ser campos no User ou SaldoUsuario.
-    # No seu models.py, 'nome_banco_cliente' e 'iban_cliente' estão no modelo Saque,
-    # o que não é ideal para preencher automaticamente. Eles deveriam estar no SaldoUsuario ou User.
-    # Para fins de demonstração, vou adicionar campos temporários no SaldoUsuario para puxar.
-    # *** RECOMENDAÇÃO: Adicionar `banco_padrao_saque` e `iban_padrao_saque` ao `SaldoUsuario` ou `User` model. ***
+    # Puxa os dados bancários do SaldoUsuario (assumindo que você já adicionou banco_padrao_saque e iban_padrao_saque lá)
+    banco_cliente_saque = user_saldo.banco_padrao_saque 
+    iban_cliente_saque = user_saldo.iban_padrao_saque 
 
-    # Puxa os dados bancários do SaldoUsuario ou deixa vazio se não houver
-    # Se você quiser permitir que o usuário adicione esses dados no perfil, 
-    # eles devem ser campos em User ou SaldoUsuario.
-    banco_cliente_saque = user_saldo.banco_padrao_saque if hasattr(user_saldo, 'banco_padrao_saque') else '' # Supondo que você adicione este campo
-    iban_cliente_saque = user_saldo.iban_padrao_saque if hasattr(user_saldo, 'iban_padrao_saque') else '' # Supondo que você adicione este campo
-
-    # ALTERNATIVA: Puxar do último saque aprovado
-    last_approved_saque = Saque.objects.filter(usuario=request.user, aprovado=True).order_by('-data_aprovacao').first()
-    if last_approved_saque:
-        banco_cliente_saque = last_approved_saque.nome_banco_cliente
-        iban_cliente_saque = last_approved_saque.iban_cliente
-
+    # Alternativa: Puxar do último saque aprovado se o SaldoUsuario não tiver esses campos preenchidos
+    if not banco_cliente_saque and not iban_cliente_saque:
+        last_approved_saque = Saque.objects.filter(usuario=request.user, aprovado=True).order_by('-data_aprovacao').first()
+        if last_approved_saque:
+            banco_cliente_saque = last_approved_saque.nome_banco_cliente
+            iban_cliente_saque = last_approved_saque.iban_cliente
 
     if request.method == 'POST':
-        form = SaqueForm(request.POST) # SaqueForm agora só tem o campo valor
+        form = SaqueForm(request.POST) 
         if form.is_valid():
             valor_saque = form.cleaned_data['valor']
             
@@ -292,26 +286,36 @@ def nivel_view(request):
 
 @login_required
 def minha_equipe_view(request):
-    convidante_phone = request.user.phone_number
-    link_convite = request.build_absolute_uri(reverse('cadastro') + f'?convidante={convidante_phone}')
+    # Usa o referral_code do usuário logado para gerar o link
+    # Garante que o referral_code exista. Se não, ele será gerado na primeira chamada a save().
+    if not request.user.referral_code:
+        request.user.save() # Isso irá acionar o método save() no modelo User e gerar o referral_code se não existir
+    
+    link_convite = request.build_absolute_uri(reverse('cadastro') + f'?ref={request.user.referral_code}')
 
-    convidados = Convite.objects.filter(convidante=request.user).select_related('convidado__saldo', 'convidado__saldo__nivel_ativo')
+    # Puxa os usuários que foram referenciados por este usuário (diretamente do User.referred_users)
+    # Usa select_related para otimizar queries e pegar dados de saldo e nível
+    convidados_diretos = request.user.referred_users.all().select_related('saldo', 'saldo__nivel_ativo')
     
     equipe_detalhes = []
-    for convite_obj in convidados:
-        convidado_user = convite_obj.convidado
+    for convidado_user in convidados_diretos:
+        # Tenta encontrar o objeto Convite para pegar o 'data_convite' e 'subsidy_granted'
+        # É importante ter o objeto Convite para esses campos específicos
+        convite_obj = Convite.objects.filter(convidante=request.user, convidado=convidado_user).first()
+        
         equipe_detalhes.append({
             'phone_number': convidado_user.phone_number,
-            'first_name': convidado_user.first_name, # Adicionado first_name
-            'data_convite': convite_obj.data_convite,
+            'first_name': convidado_user.first_name,
+            'data_convite': convite_obj.data_convite if convite_obj else convidado_user.date_joined, # Fallback para data de registro se Convite não existir
             'nivel_ativo': convidado_user.saldo.nivel_ativo.nome if convidado_user.saldo and convidado_user.saldo.nivel_ativo else 'Nenhum',
             'tem_nivel_ativo': convidado_user.saldo.nivel_ativo is not None if convidado_user.saldo else False,
-            'subsidy_granted': convite_obj.subsidy_granted,
+            'subsidy_granted': convite_obj.subsidy_granted if convite_obj else False,
         })
     
     context = {
         'link_convite': link_convite,
         'equipe_detalhes': equipe_detalhes,
+        'total_convidados': convidados_diretos.count(), # Adicionado para exibir o total de convidados
     }
     return render(request, 'core/minha_equipe.html', context)
 
@@ -333,8 +337,9 @@ def update_profile_view(request):
     if request.method == 'POST':
         first_name = request.POST.get('first_name', '').strip()
         # Campos de banco e IBAN para serem editados no perfil
-        banco_cliente = request.POST.get('banco_cliente', '').strip()
-        iban_cliente = request.POST.get('iban_cliente', '').strip()
+        # Certifique-se de que os nomes dos campos no seu HTML (input `name`) correspondem a estes
+        banco_cliente = request.POST.get('banco_padrao_saque', '').strip() # Corrigido para nome esperado do campo no model
+        iban_cliente = request.POST.get('iban_padrao_saque', '').strip()   # Corrigido para nome esperado do campo no model
 
         # Atualiza o nome
         if first_name:
@@ -343,27 +348,12 @@ def update_profile_view(request):
             request.user.first_name = '' # Permite limpar o nome
         
         # Atualiza os dados bancários no SaldoUsuario
-        # ATENÇÃO: Se você realmente deseja que o usuário possa editar o IBAN e Banco,
-        # eles precisam ser campos no modelo SaldoUsuario ou User.
-        # Por enquanto, vou atualizar os campos `nome_banco_cliente` e `iban_cliente`
-        # no SaldoUsuario se existirem (você precisará adicioná-los ao modelo SaldoUsuario)
-        # OU, alternativamente, usaremos o "Último Saque Aprovado" para inferir os dados bancários
-        # ou criaremos um novo modelo para dados bancários do usuário.
-        
-        # PARA FINS DESTA CORREÇÃO, ASSUMIREI que você adicionará `banco_padrao_saque` e `iban_padrao_saque`
-        # ao modelo SaldoUsuario ou User, ou que esses campos serão manejados por um modelo CoordenadaBancaria
-        # vinculada ao usuário para saque.
-        # Por enquanto, vou adicionar um comentário e um placeholder.
-        
-        # *** RECOMENDAÇÃO: Adicionar ao SaldoUsuario: ***
-        # banco_padrao_saque = models.CharField(max_length=100, blank=True, null=True, verbose_name="Banco Padrão para Saque")
-        # iban_padrao_saque = models.CharField(max_length=34, blank=True, null=True, verbose_name="IBAN Padrão para Saque")
+        # Assumimos que 'banco_padrao_saque' e 'iban_padrao_saque' já foram adicionados ao modelo SaldoUsuario
+        user_saldo.banco_padrao_saque = banco_cliente 
+        user_saldo.iban_padrao_saque = iban_cliente   
+        user_saldo.save() 
 
-        user_saldo.banco_padrao_saque = banco_cliente # Você precisará criar este campo no models.py
-        user_saldo.iban_padrao_saque = iban_cliente   # Você precisará criar este campo no models.py
-        user_saldo.save() # Salva as alterações no SaldoUsuario
-
-        request.user.save() # Salva as alterações no User
+        request.user.save() 
 
         messages.success(request, 'Perfil atualizado com sucesso!')
         return redirect('perfil')

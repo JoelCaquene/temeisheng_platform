@@ -1,4 +1,5 @@
-# core/forms.py
+# core/forms.py (ATUALIZADO E COMPLETO)
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, SetPasswordForm
 from .models import User, Deposito, Saque, CoordenadaBancaria, Nivel # Importar Nivel também
@@ -8,12 +9,17 @@ class UserRegistrationForm(forms.ModelForm):
                                    widget=forms.TextInput(attrs={'placeholder': 'Ex: 9XXXXXXXX'}))
     password = forms.CharField(label="Senha", widget=forms.PasswordInput(attrs={'placeholder': 'Mínimo 4 dígitos'}))
     password_confirm = forms.CharField(label="Confirmar Senha", widget=forms.PasswordInput(attrs={'placeholder': 'Confirme sua senha'}))
-    inviter_phone = forms.CharField(label="Número do Convidante (Opcional)", max_length=15, required=False,
-                                    widget=forms.TextInput(attrs={'placeholder': 'Se alguém te convidou'}))
+    
+    # ATUALIZADO: Usar 'referral_code' em vez de 'inviter_phone'
+    # Este campo não será salvo diretamente no modelo User, mas será usado para lógica na view.
+    referral_code_inviter = forms.CharField(label="Código de Convite (Opcional)", max_length=10, required=False,
+                                            widget=forms.TextInput(attrs={'placeholder': 'Se alguém te convidou'}))
 
     class Meta:
         model = User
-        fields = ['phone_number', 'password', 'password_confirm', 'inviter_phone']
+        # ATUALIZADO: 'referral_code_inviter' não faz parte do modelo User, então não pode estar em 'fields'
+        # Removemos 'inviter_phone' e não adicionamos 'referral_code_inviter' aqui
+        fields = ['phone_number', 'password', 'password_confirm'] 
 
     def clean(self):
         cleaned_data = super().clean()
@@ -23,10 +29,11 @@ class UserRegistrationForm(forms.ModelForm):
         if password and password_confirm and password != password_confirm:
             self.add_error('password_confirm', "As senhas não coincidem.")
         
-        if password and len(password) < 4: # Django já valida o min_length pelo settings, mas é bom ter aqui
+        if password and len(password) < 4: 
             self.add_error('password', "A senha deve ter no mínimo 4 dígitos.")
             
-        # Não precisa validar inviter_phone aqui, será validado na view ou signal
+        # O 'referral_code_inviter' será validado na view se um usuário com esse código existe
+        # Não precisamos de validação específica aqui no formulário para ele.
 
         return cleaned_data
 
@@ -61,14 +68,17 @@ class DepositoForm(forms.ModelForm):
 
     class Meta:
         model = Deposito
-        fields = ['valor', 'comprovativo', 'coordenada_bancaria_usada', 'nivel_ativar'] # Adicionado nivel_ativar
+        # CORREÇÃO CRÍTICA AQUI: Mudado 'comprovativo' para 'comprovante_pix'
+        fields = ['valor', 'comprovante_pix', 'coordenada_bancaria_usada', 'nivel_ativar'] 
         widgets = {
             'valor': forms.NumberInput(attrs={'placeholder': 'Ex: 1500.00', 'class': 'form-control'}),
-            'comprovativo': forms.FileInput(attrs={'class': 'form-control'}),
+            # CORREÇÃO CRÍTICA AQUI: Mudado 'comprovativo' para 'comprovante_pix'
+            'comprovante_pix': forms.FileInput(attrs={'class': 'form-control'}),
         }
         labels = {
             'valor': 'Digite o Valor do Depósito (KZ):',
-            'comprovativo': 'Carregar Comprovativo:',
+            # CORREÇÃO CRÍTICA AQUI: Mudado 'comprovativo' para 'comprovante_pix'
+            'comprovante_pix': 'Carregar Comprovativo:',
         }
 
     def clean_valor(self):
@@ -78,11 +88,9 @@ class DepositoForm(forms.ModelForm):
         return valor
 
 class SaqueForm(forms.ModelForm):
-    # Campos de banco e IBAN REMOVIDOS do formulário.
-    # Estes dados virão do perfil do usuário na view.
     class Meta:
         model = Saque
-        fields = ['valor'] # Apenas o valor é pedido no formulário
+        fields = ['valor'] 
         widgets = {
             'valor': forms.NumberInput(attrs={'placeholder': 'Ex: 5000.00', 'class': 'form-control'}),
         }
