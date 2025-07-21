@@ -9,8 +9,8 @@
 # https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
-import os # Importar para usar os.path.join
-import dj_database_url # <--- ADIÇÃO: Importa dj_database_url
+import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -165,6 +165,60 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # Envia e-mails
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'seu_email@dominio.com'
 # EMAIL_HOST_PASSWORD = 'sua_senha_de_email'
+
+
+# ********** INÍCIO DA ADIÇÃO: Configuração de Logging para Heroku **********
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG', # Alterado para 'DEBUG' para obter o máximo de detalhes
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR', # Apenas erros de requisição
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.contrib.auth.backends': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        # Você pode adicionar um logger para o seu próprio aplicativo, se necessário.
+        # Por exemplo, se seu app principal se chama 'core':
+        # 'core': {
+        #     'handlers': ['console'],
+        #     'level': 'DEBUG', # 'DEBUG' para ver detalhes do seu código
+        #     'propagate': False,
+        # },
+    }
+}
+# ********** FIM DA ADIÇÃO: Configuração de Logging para Heroku **********
 
 
 # <--- ADIÇÃO: Configurações do django-heroku (coloque no final do settings.py)
