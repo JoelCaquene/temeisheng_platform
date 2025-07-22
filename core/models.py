@@ -17,34 +17,34 @@ class CustomUserManager(BaseUserManager):
         Cria e salva um Usuário com o número de telefone e senha dados.
         """
         if not phone_number:
-            raise ValueError(_('O número de telefone deve ser definido')) #
+            raise ValueError(_('O número de telefone deve ser definido')) 
         
         # Garante que o email seja None se estiver vazio, ou normaliza
         email = self.normalize_email(email) if email else None 
         
-        user = self.model(phone_number=phone_number, email=email, **extra_fields) #
-        user.set_password(password) #
-        user.save(using=self._db) #
-        return user #
+        user = self.model(phone_number=phone_number, email=email, **extra_fields) 
+        user.set_password(password) 
+        user.save(using=self._db) 
+        return user 
 
     def create_superuser(self, phone_number, email, password=None, **extra_fields):
         """
         Cria e salva um superusuário com o número de telefone e senha dados.
         """
-        extra_fields.setdefault('is_staff', True) #
-        extra_fields.setdefault('is_superuser', True) #
-        extra_fields.setdefault('is_active', True) # Garante que superusuário esteja ativo
+        extra_fields.setdefault('is_staff', True) 
+        extra_fields.setdefault('is_superuser', True) 
+        extra_fields.setdefault('is_active', True) 
 
-        if extra_fields.get('is_staff') is not True: #
-            raise ValueError(_('Superuser deve ter is_staff=True.')) #
-        if extra_fields.get('is_superuser') is not True: #
-            raise ValueError(_('Superuser deve ter is_superuser=True.')) #
+        if extra_fields.get('is_staff') is not True: 
+            raise ValueError(_('Superuser deve ter is_staff=True.')) 
+        if extra_fields.get('is_superuser') is not True: 
+            raise ValueError(_('Superuser deve ter is_superuser=True.')) 
         
         # O campo 'email' é obrigatório para o superusuário neste método
-        if not email: #
-            raise ValueError(_('Superuser deve ter um endereço de email.')) #
+        if not email: 
+            raise ValueError(_('Superuser deve ter um endereço de email.')) 
 
-        return self.create_user(phone_number, email, password, **extra_fields) #
+        return self.create_user(phone_number, email, password, **extra_fields) 
 
 
 class User(AbstractUser):
@@ -53,12 +53,9 @@ class User(AbstractUser):
     phone_number_regex = RegexValidator(regex=r"^\+?1?\d{9,15}$", message="O número de telefone deve ser inserido no formato: '+999999999'. Até 15 dígitos permitidos.")
     phone_number = models.CharField(validators=[phone_number_regex], max_length=17, unique=True, verbose_name="Número de Telefone")
     
-    # Adicionado o campo 'email' explicitamente, já que ele é um REQUIRED_FIELD
-    # No seu 0006_alter_convite_options_and_more.py, o campo 'email' já foi adicionado
-    # como models.EmailField(blank=True, max_length=254, verbose_name='email address')
-    # Mantenha a definição que foi usada na sua migração 0006. Se você o tornou 'unique=True'
-    # em algum ponto, precisará gerar uma nova migração.
-    email = models.EmailField(_("email address"), blank=True, null=True, unique=True) # Adicionado unique=True para email, se for o caso
+    # *** ESTA É A ÚNICA ALTERAÇÃO SIGNIFICATIVA PARA O SEU PROBLEMA DE CADASTRO ***
+    # REMOVIDO unique=True. Isso permite que múltiplos usuários tenham email vazio ou null.
+    email = models.EmailField(_("email address"), blank=True, null=True) 
 
     # Novo campo para o código de convite único
     referral_code = models.CharField(max_length=10, unique=True, blank=True, null=True, verbose_name="Código de Convite")
@@ -66,8 +63,8 @@ class User(AbstractUser):
     referred_by = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='referred_users', verbose_name="Convidado Por")
 
     USERNAME_FIELD = 'phone_number'
-    # Adicionado 'email' aos REQUIRED_FIELDS para que seja solicitado no createsuperuser
-    REQUIRED_FIELDS = ['email', 'first_name'] 
+    # Ajustado REQUIRED_FIELDS: 'email' não é mais obrigatório para usuários normais, apenas para superusuários (via CustomUserManager).
+    REQUIRED_FIELDS = ['first_name'] 
 
     # IMPORTANTE: Conecta o seu CustomUserManager ao seu modelo User
     objects = CustomUserManager() 
@@ -194,7 +191,7 @@ class Convite(models.Model):
         return f"{self.convidante.phone_number} convidou {self.convidado.phone_number}"
     
     class Meta:
-        unique_together = ('convidante', 'convidado') # Garante que um usuário não convide o mesmo mais de uma vez
+        unique_together = ('convidante', 'convidado') 
 
 class CoordenadaBancaria(models.Model):
     nome_banco = models.CharField(max_length=100)
@@ -215,7 +212,6 @@ class ConfiguracaoPlataforma(models.Model):
     class Meta:
         verbose_name = "Configuração da Plataforma"
         verbose_name_plural = "Configurações da Plataforma"
-        # Garante que haverá apenas uma instância deste modelo
         unique_together = ('whatsapp_numero', 'telegram_numero') 
 
     def __str__(self):
