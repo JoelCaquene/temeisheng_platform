@@ -1,8 +1,9 @@
-# core/forms.py (ATUALIZADO E COMPLETO)
+# core/forms.py (ATUALIZADO E COMPLETO - APENAS COM A ADIÇÃO SOLICITADA PARA PERFIL/DADOS BANCÁRIOS)
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, SetPasswordForm
-from .models import User, Deposito, Saque, CoordenadaBancaria, Nivel # Importar Nivel também
+# Importar Nivel e SaldoUsuario (SaldoUsuario é crucial para os dados bancários)
+from .models import User, Deposito, Saque, CoordenadaBancaria, Nivel, SaldoUsuario 
 
 class UserRegistrationForm(forms.ModelForm):
     phone_number = forms.CharField(label="Número de Telefone", max_length=15, 
@@ -112,4 +113,48 @@ class CustomPasswordChangeForm(PasswordChangeForm):
 class CustomSetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(label="Nova Senha", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     new_password2 = forms.CharField(label="Confirme a Nova Senha", widget=forms.PasswordInput(attrs={'class': 'form-control'}))
+
+
+# NOVO: Formulário para atualização do perfil (incluindo dados bancários)
+class ProfileUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(label="Nome", max_length=150, required=False, 
+                                 widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Seu Nome'}))
     
+    banco_padrao_saque = forms.CharField(label="Nome do Banco para Saque", max_length=100, required=False,
+                                         widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Banco Millennium Atlântico'}))
+    iban_padrao_saque = forms.CharField(label="IBAN para Saque", max_length=34, required=False,
+                                        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: AO0600000000000000000000000'}))
+
+    class Meta:
+        model = SaldoUsuario # Este formulário se baseia em SaldoUsuario para os dados bancários
+        # Os campos do SaldoUsuario que queremos editar
+        fields = ['banco_padrao_saque', 'iban_padrao_saque'] 
+        # O campo 'first_name' é do modelo User, então o trataremos separadamente no init e save.
+
+    def __init__(self, *args, **kwargs):
+        # Pop user instance if passed (e.g., in views.py, instance=request.user)
+        user = kwargs.pop('user', None) 
+        super().__init__(*args, **kwargs)
+        
+        # Se um objeto User foi passado, inicializa 'first_name'
+        if user:
+            self.fields['first_name'].initial = user.first_name
+        
+        # Aplica classes CSS aos campos
+        # Não é estritamente necessário se já definidos no widget acima, mas garante consistência
+        for field_name, field in self.fields.items():
+            if 'class' not in field.widget.attrs: # Adiciona apenas se a classe não estiver já definida
+                field.widget.attrs.update({'class': 'form-control'})
+
+    def save(self, commit=True):
+        # Salva o SaldoUsuario primeiro
+        saldo_usuario = super().save(commit=commit)
+
+        # Trata o campo 'first_name' que pertence ao modelo User
+        if self.cleaned_data['first_name'] is not None:
+            saldo_usuario.usuario.first_name = self.cleaned_data['first_name']
+            if commit:
+                saldo_usuario.usuario.save() # Salva o objeto User associado
+
+        return saldo_usuario
+        

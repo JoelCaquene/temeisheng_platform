@@ -1,4 +1,4 @@
-# core/views.py
+# core/views.py (ATUALIZADO E COMPLETO - APENAS COM A ADIÇÃO SOLICITADA PARA PERFIL/DADOS BANCÁRIOS)
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
@@ -13,7 +13,8 @@ from datetime import timedelta, time
 import random # Para simular a aprovação de depósito
 # import hashlib # Este módulo não será mais necessário para gerar links de convite, pois o referral_code já é gerado no modelo User
 
-from .forms import UserRegistrationForm, UserLoginForm, DepositoForm, SaqueForm, CustomPasswordChangeForm, CustomSetPasswordForm
+# Importar o novo formulário ProfileUpdateForm
+from .forms import UserRegistrationForm, UserLoginForm, DepositoForm, SaqueForm, CustomPasswordChangeForm, CustomSetPasswordForm, ProfileUpdateForm
 from .models import User, SaldoUsuario, Nivel, Deposito, Saque, TarefaGanho, Convite, CoordenadaBancaria, ConfiguracaoPlataforma
 
 # --- Views de Autenticação e Registro ---
@@ -344,32 +345,30 @@ def update_profile_view(request):
     user_saldo = get_object_or_404(SaldoUsuario, usuario=request.user) # Puxa o saldo do usuário
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        # Campos de banco e IBAN para serem editados no perfil
-        # Certifique-se de que os nomes dos campos no seu HTML (input `name`) correspondem a estes
-        banco_cliente = request.POST.get('banco_padrao_saque', '').strip() 
-        iban_cliente = request.POST.get('iban_padrao_saque', '').strip() 
-
-        # Atualiza o nome
-        if first_name:
-            request.user.first_name = first_name
+        # Instancie o formulário com os dados POST e as instâncias existentes
+        # Passa a instância do SaldoUsuario para que o formulário saiba qual objeto atualizar
+        # E passa o objeto User para que o formulário possa inicializar/salvar o first_name
+        form = ProfileUpdateForm(request.POST, instance=user_saldo, user=request.user) 
+        if form.is_valid():
+            form.save() # O método save do formulário cuida de salvar SaldoUsuario e User (first_name)
+            messages.success(request, 'Perfil atualizado com sucesso!')
+            return redirect('perfil')
         else:
-            request.user.first_name = '' # Permite limpar o nome
-        
-        # Atualiza os dados bancários no SaldoUsuario
-        # Assumimos que 'banco_padrao_saque' e 'iban_padrao_saque' já foram adicionados ao modelo SaldoUsuario
-        user_saldo.banco_padrao_saque = banco_cliente 
-        user_saldo.iban_padrao_saque = iban_cliente 
-        user_saldo.save() 
-
-        request.user.save() 
-
-        messages.success(request, 'Perfil atualizado com sucesso!')
-        return redirect('perfil')
+            # Se o formulário não for válido, itera sobre os erros e exibe-os
+            for field, errors in form.errors.items():
+                for error in errors:
+                    if field == '__all__':
+                        messages.error(request, error)
+                    else:
+                        messages.error(request, f'{form.fields[field].label}: {error}')
+    else:
+        # Se for um GET request, instancie o formulário com as instâncias existentes para pré-preencher os campos
+        form = ProfileUpdateForm(instance=user_saldo, user=request.user) 
 
     context = {
-        'user': request.user,
-        'saldo': user_saldo, # Para preencher os campos de IBAN/Banco no form de edição
+        'form': form, # Passa o formulário para o template
+        'user': request.user, # Ainda pode ser útil no template para exibir outros dados do user
+        'saldo': user_saldo, # Ainda pode ser útil no template para exibir outros dados de saldo
     }
     return render(request, 'core/update_profile.html', context)
 
