@@ -3,13 +3,98 @@
 
 {% block title %}Saque - Temeisheng{% endblock %}
 
+{% block extra_css %}
+<style>
+    .card {
+        background: linear-gradient(145deg, #16213e, #0f3460);
+        border: 1px solid #e94560;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+    }
+    .card-header {
+        background-color: #0f3460;
+        border-bottom: 2px solid #e94560;
+        color: #ff5722;
+        font-weight: bold;
+        font-size: 1.5rem;
+    }
+    .form-label {
+        color: #ff5722;
+        font-weight: 600;
+    }
+    .form-control {
+        background-color: #1a1a2e !important;
+        border: 1px solid #0f3460 !important;
+        color: #e0e0e0 !important;
+        border-radius: 8px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .form-control:focus {
+        border-color: #e94560 !important;
+        box-shadow: 0 0 0 0.25rem rgba(233, 69, 96, 0.25) !important;
+    }
+    .btn-withdraw {
+        background-color: #dc3545;
+        border-color: #c82333;
+        font-weight: 600;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-withdraw:hover {
+        background-color: #c82333;
+        transform: translateY(-2px);
+    }
+    .btn-back {
+        background-color: #6c757d;
+        border-color: #5a6268;
+        font-weight: 600;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn-back:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+    .balance-card, .bank-info-card {
+        background-color: #1a1a2e;
+        border: 1px solid #0f3460;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .text-value-positive { color: #28a745; font-weight: bold; }
+    .text-value-negative { color: #dc3545; font-weight: bold; }
+    .list-group-item {
+        background-color: #1a1a2e;
+        border-color: #0f3460;
+        color: #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        transition: background-color 0.3s ease;
+    }
+    .list-group-item:hover {
+        background-color: #0f3460;
+    }
+    .badge-status {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+        border-radius: 15px;
+    }
+    .alert {
+        border-radius: 10px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow-sm" style="background-color: #34495e; border-radius: 10px; border: 2px solid #2c3e50;">
-                <div class="card-header text-white text-center" style="background-color: #2c3e50; border-bottom: 2px solid #2c3e50;">
-                    <h3 class="mb-0" style="color: #ecf0f1;">Página de Saque</h3>
+            <div class="card shadow-lg">
+                <div class="card-header text-white text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-money-bill-wave me-2"></i>
+                        Página de Saque
+                    </h3>
                 </div>
                 <div class="card-body">
                     {% if messages %}
@@ -21,76 +106,108 @@
                         {% endfor %}
                     {% endif %}
 
-                    <p class="text-muted text-center" style="color: #bdc3c7;">Preencha os detalhes abaixo para solicitar seu saque. Saques são processados em até 24 horas úteis.</p>
+                    <p class="text-muted text-center">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Preencha os detalhes abaixo para solicitar seu saque. Saques são processados em até 24 horas úteis.
+                    </p>
 
-                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
-                        <h5 class="text-white">Seus Saldos Atuais:</h5>
-                        <p style="color: #bdc3c7;">Saldo Acumulado: <span style="color: #2ecc71;">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
-                        {# CORREÇÃO AQUI: 'saldo_subsidio' alterado para 'saldo_subsidy' #}
-                        <p style="color: #bdc3c7;">Saldo de Subsídio: <span style="color: #2ecc71;">{{ saldo.saldo_subsidy|floatformat:2 }} Kz</span></p>
-                        <p style="color: #bdc3c7;">Total Sacado: <span style="color: #e74c3c;">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
+                    <div class="card p-3 mb-4 balance-card">
+                        <h5 class="text-white text-center">Seus Saldos Atuais:</h5>
+                        <div class="d-flex justify-content-around text-center mt-3">
+                            <div>
+                                <p class="mb-1 text-muted">Saldo Acumulado:</p>
+                                <span class="text-value-positive">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span>
+                            </div>
+                            <div>
+                                <p class="mb-1 text-muted">Saldo de Subsídio:</p>
+                                <span class="text-value-positive">{{ saldo.saldo_subsidy|floatformat:2 }} Kz</span>
+                            </div>
+                            <div>
+                                <p class="mb-1 text-muted">Total Sacado:</p>
+                                <span class="text-value-negative">{{ saldo.total_sacado|floatformat:2 }} Kz</span>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
-                        <h5 class="text-white">Seus Dados Bancários para Saque:</h5>
+                    <div class="card p-3 mb-4 bank-info-card">
+                        <h5 class="text-white text-center">Seus Dados Bancários para Saque:</h5>
                         {% if banco_cliente_saque and iban_cliente_saque %}
-                            <p style="color: #bdc3c7;">Banco: <strong style="color: #ecf0f1;">{{ banco_cliente_saque }}</strong></p>
-                            <p style="color: #bdc3c7;">IBAN: <strong style="color: #ecf0f1;">{{ iban_cliente_saque }}</strong></p>
-                            <p class="form-text" style="color: #bdc3c7;">Para alterar estes dados, vá em <a href="{% url 'perfil' %}" style="color: #3498db;">Seu Perfil</a> e clique em "Editar Perfil".</p>
+                            <p class="text-muted mb-1 text-center">Banco: <strong class="text-white">{{ banco_cliente_saque }}</strong></p>
+                            <p class="text-muted mb-3 text-center">IBAN: <strong class="text-white">{{ iban_cliente_saque }}</strong></p>
+                            <p class="form-text text-center">
+                                Para alterar estes dados, vá em <a href="{% url 'perfil' %}" style="color: #ff5722; text-decoration: none; font-weight: bold;">Seu Perfil</a> e clique em "Editar Perfil".
+                            </p>
                         {% else %}
-                            <p class="text-warning">Você ainda não configurou seus dados bancários para saque. Por favor, vá em <a href="{% url 'perfil' %}" style="color: #3498db;">Seu Perfil</a> e clique em "Editar Perfil" para adicionar suas informações bancárias.</p>
+                            <div class="alert alert-warning text-center" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Você ainda não configurou seus dados bancários para saque. Por favor, vá em <a href="{% url 'perfil' %}" style="color: #1a1a2e; font-weight: bold;">Seu Perfil</a> para adicionar suas informações.
+                            </div>
                         {% endif %}
                     </div>
 
                     <form method="post">
                         {% csrf_token %}
-                        {# Apenas o campo 'valor' agora #}
-                        <div class="mb-3">
-                            <label for="{{ form.valor.id_for_label }}" class="form-label" style="color: #ecf0f1;">{{ form.valor.label }}</label>
+                        <div class="mb-4">
+                            <label for="{{ form.valor.id_for_label }}" class="form-label">
+                                <i class="fas fa-dollar-sign me-2"></i>
+                                {{ form.valor.label }}
+                            </label>
                             {{ form.valor }}
                             {% if form.valor.help_text %}
-                                <div class="form-text" style="color: #bdc3c7;">{{ form.valor.help_text }}</div>
+                                <div class="form-text">{{ form.valor.help_text }}</div>
                             {% endif %}
                             {% for error in form.valor.errors %}
                                 <div class="alert alert-danger mt-1">{{ error }}</div>
                             {% endfor %}
                         </div>
                         
-                        <p class="text-muted text-center" style="color: #bdc3c7; font-size: 0.9em;">
-                            Seu saldo atual disponível para saque: <span style="color: #2ecc71; font-weight: bold;">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span>
+                        <p class="text-muted text-center" style="font-size: 0.9em;">
+                            Seu saldo atual disponível para saque: <strong class="text-value-positive">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</strong>
                         </p>
-                        <button type="submit" class="btn btn-primary w-100 py-2" style="background-color: #2ecc71; border-color: #27ae60;">Solicitar Saque</button>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-withdraw btn-lg">
+                                <i class="fas fa-paper-plane me-2"></i>
+                                Solicitar Saque
+                            </button>
+                            <a href="{% url 'menu' %}" class="btn btn-back btn-lg">
+                                <i class="fas fa-arrow-left me-2"></i>
+                                Voltar ao Menu
+                            </a>
+                        </div>
                     </form>
 
-                    <a href="{% url 'menu' %}" class="btn btn-secondary w-100 py-2 mt-3" style="background-color: #7f8c8d; border-color: #7f8c8d;">Voltar ao Menu</a>
-
-                    <h5 class="mt-5 text-white text-center">Últimos Saques Solicitados</h5>
+                    <h5 class="mt-5 text-white text-center">
+                        <i class="fas fa-history me-2"></i>
+                        Últimos Saques Solicitados
+                    </h5>
                     {% if saques_recentes %}
                         <ul class="list-group mt-3">
                             {% for saque in saques_recentes %}
-                                <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: #2c3e50; border-color: #34495e; color: #ecf0f1;">
-                                    <span>
-                                        Valor: <strong style="color: #1abc9c;">{{ saque.valor|floatformat:2 }} Kz</strong><br>
-                                        Status: 
-                                        {# CORREÇÃO AQUI: Usando 'saque.status' diretamente, pois 'aprovado' e 'rejeitado' não são campos do modelo Saque #}
-                                        {% if saque.status == 'aprovado' %}
-                                            <span class="badge bg-success">Aprovado</span>
-                                        {% elif saque.status == 'rejeitado' %}
-                                            <span class="badge bg-danger">Rejeitado</span>
-                                        {% else %} {# Default para 'pendente' #}
-                                            <span class="badge bg-warning text-dark">Pendente</span>
-                                        {% endif %}<br>
-                                        Data: {{ saque.data_solicitacao|date:"d/m/Y H:i" }}
-                                    </span>
-                                    <span>
-                                        Banco: {{ saque.nome_banco_cliente|default:"Não informado" }}<br>
-                                        IBAN: {{ saque.iban_cliente|default:"Não informado" }}
-                                    </span>
+                                <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                                    <div class="me-3 mb-2 mb-md-0">
+                                        <p class="mb-0">Valor: <strong style="color: #1abc9c;">{{ saque.valor|floatformat:2 }} Kz</strong></p>
+                                        <p class="mb-0">Data: {{ saque.data_solicitacao|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <p class="mb-0">Status:
+                                            {% if saque.status == 'aprovado' %}
+                                                <span class="badge bg-success badge-status">Aprovado</span>
+                                            {% elif saque.status == 'rejeitado' %}
+                                                <span class="badge bg-danger badge-status">Rejeitado</span>
+                                            {% else %}
+                                                <span class="badge bg-warning text-dark badge-status">Pendente</span>
+                                            {% endif %}
+                                        </p>
+                                        <p class="mb-0" style="font-size: 0.9em;">
+                                            Banco: {{ saque.nome_banco_cliente|default:"Não informado" }}<br>
+                                            IBAN: {{ saque.iban_cliente|default:"Não informado" }}
+                                        </p>
+                                    </div>
                                 </li>
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-center" style="color: #bdc3c7;">Nenhum saque solicitado ainda.</p>
+                        <p class="text-center text-muted">Nenhum saque solicitado ainda.</p>
                     {% endif %}
                 </div>
             </div>
