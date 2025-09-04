@@ -116,6 +116,9 @@
         border-radius: 10px;
         font-weight: 600;
     }
+    .text-light-custom {
+        color: #e0e0e0 !important;
+    }
 </style>
 {% endblock %}
 
@@ -140,7 +143,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <p class="text-center mb-4 text-muted">
+                    <p class="text-center mb-4 text-light-custom">
                         <i class="fas fa-play-circle me-1"></i>
                         Realize sua tarefa diária para ganhar Kz!
                     </p>
@@ -151,7 +154,7 @@
                                 <i class="fas fa-check-circle"></i>
                                 Seu Nível Ativo: <span style="color: #1abc9c;">{{ saldo.nivel_ativo.nome }}</span>
                             </h4>
-                            <p class="text-muted">Ganho Diário Estimado: <strong style="color: #7f8c8d;">{{ saldo.nivel_ativo.ganho_diario|floatformat:2 }} Kz</strong></p>
+                            <p class="text-light-custom">Ganho Diário Estimado: <strong style="color: #7f8c8d;">{{ saldo.nivel_ativo.ganho_diario|floatformat:2 }} Kz</strong></p>
                             
                             {% if tarefa_hoje_realizada %}
                                 <p class="text-warning font-weight-bold mt-3">Você já realizou sua tarefa diária. Volte amanhã para mais ganhos!</p>
@@ -175,7 +178,7 @@
                                 <i class="fas fa-exclamation-triangle"></i>
                                 Você precisa de um Nível Ativo!
                             </h4>
-                            <p class="text-muted">Para realizar tarefas e ganhar, por favor, faça um depósito para ativar seu nível.</p>
+                            <p class="text-light-custom">Para realizar tarefas e ganhar, por favor, faça um depósito para ativar seu nível.</p>
                             <a href="{% url 'deposito' %}" class="btn btn-primary btn-lg mt-3">
                                 <i class="fas fa-piggy-bank me-2"></i>
                                 Fazer Depósito Agora

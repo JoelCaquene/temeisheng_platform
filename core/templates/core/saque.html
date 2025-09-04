@@ -82,6 +82,9 @@
         border-radius: 10px;
         font-weight: 600;
     }
+    .text-light-custom {
+        color: #e0e0e0 !important;
+    }
 </style>
 {% endblock %}
 
@@ -106,7 +109,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <p class="text-muted text-center">
+                    <p class="text-light-custom text-center">
                         <i class="fas fa-info-circle me-1"></i>
                         Preencha os detalhes abaixo para solicitar seu saque. Saques são processados em até 24 horas úteis.
                     </p>
@@ -115,15 +118,15 @@
                         <h5 class="text-white text-center">Seus Saldos Atuais:</h5>
                         <div class="d-flex justify-content-around text-center mt-3">
                             <div>
-                                <p class="mb-1 text-muted">Saldo Acumulado:</p>
+                                <p class="mb-1 text-light-custom">Saldo Acumulado:</p>
                                 <span class="text-value-positive">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span>
                             </div>
                             <div>
-                                <p class="mb-1 text-muted">Saldo de Subsídio:</p>
+                                <p class="mb-1 text-light-custom">Saldo de Subsídio:</p>
                                 <span class="text-value-positive">{{ saldo.saldo_subsidy|floatformat:2 }} Kz</span>
                             </div>
                             <div>
-                                <p class="mb-1 text-muted">Total Sacado:</p>
+                                <p class="mb-1 text-light-custom">Total Sacado:</p>
                                 <span class="text-value-negative">{{ saldo.total_sacado|floatformat:2 }} Kz</span>
                             </div>
                         </div>
@@ -132,9 +135,9 @@
                     <div class="card p-3 mb-4 bank-info-card">
                         <h5 class="text-white text-center">Seus Dados Bancários para Saque:</h5>
                         {% if banco_cliente_saque and iban_cliente_saque %}
-                            <p class="text-muted mb-1 text-center">Banco: <strong class="text-white">{{ banco_cliente_saque }}</strong></p>
-                            <p class="text-muted mb-3 text-center">IBAN: <strong class="text-white">{{ iban_cliente_saque }}</strong></p>
-                            <p class="form-text text-center">
+                            <p class="text-light-custom mb-1 text-center">Banco: <strong class="text-white">{{ banco_cliente_saque }}</strong></p>
+                            <p class="text-light-custom mb-3 text-center">IBAN: <strong class="text-white">{{ iban_cliente_saque }}</strong></p>
+                            <p class="form-text text-center text-light-custom">
                                 Para alterar estes dados, vá em <a href="{% url 'perfil' %}" style="color: #ff5722; text-decoration: none; font-weight: bold;">Seu Perfil</a> e clique em "Editar Perfil".
                             </p>
                         {% else %}
@@ -154,14 +157,14 @@
                             </label>
                             {{ form.valor }}
                             {% if form.valor.help_text %}
-                                <div class="form-text">{{ form.valor.help_text }}</div>
+                                <div class="form-text text-light-custom">{{ form.valor.help_text }}</div>
                             {% endif %}
                             {% for error in form.valor.errors %}
                                 <div class="alert alert-danger mt-1">{{ error }}</div>
                             {% endfor %}
                         </div>
                         
-                        <p class="text-muted text-center" style="font-size: 0.9em;">
+                        <p class="text-light-custom text-center" style="font-size: 0.9em;">
                             Seu saldo atual disponível para saque: <strong class="text-value-positive">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</strong>
                         </p>
                         <div class="d-grid gap-2">
@@ -185,11 +188,11 @@
                             {% for saque in saques_recentes %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
                                     <div class="me-3 mb-2 mb-md-0">
-                                        <p class="mb-0">Valor: <strong style="color: #1abc9c;">{{ saque.valor|floatformat:2 }} Kz</strong></p>
-                                        <p class="mb-0">Data: {{ saque.data_solicitacao|date:"d/m/Y H:i" }}</p>
+                                        <p class="mb-0 text-light-custom">Valor: <strong style="color: #1abc9c;">{{ saque.valor|floatformat:2 }} Kz</strong></p>
+                                        <p class="mb-0 text-light-custom">Data: {{ saque.data_solicitacao|date:"d/m/Y H:i" }}</p>
                                     </div>
                                     <div class="text-end">
-                                        <p class="mb-0">Status:
+                                        <p class="mb-0 text-light-custom">Status:
                                             {% if saque.status == 'aprovado' %}
                                                 <span class="badge bg-success badge-status">Aprovado</span>
                                             {% elif saque.status == 'rejeitado' %}
@@ -198,7 +201,7 @@
                                                 <span class="badge bg-warning text-dark badge-status">Pendente</span>
                                             {% endif %}
                                         </p>
-                                        <p class="mb-0" style="font-size: 0.9em;">
+                                        <p class="mb-0 text-light-custom" style="font-size: 0.9em;">
                                             Banco: {{ saque.nome_banco_cliente|default:"Não informado" }}<br>
                                             IBAN: {{ saque.iban_cliente|default:"Não informado" }}
                                         </p>
@@ -207,7 +210,7 @@
                             {% endfor %}
                         </ul>
                     {% else %}
-                        <p class="text-center text-muted">Nenhum saque solicitado ainda.</p>
+                        <p class="text-center text-muted text-light-custom">Nenhum saque solicitado ainda.</p>
                     {% endif %}
                 </div>
             </div>

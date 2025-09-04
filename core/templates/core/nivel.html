@@ -76,6 +76,10 @@
         border-radius: 10px;
         font-weight: 600;
     }
+    /* Adicionado para garantir a visibilidade do texto */
+    .text-white-custom {
+        color: #e0e0e0 !important;
+    }
 </style>
 {% endblock %}
 
@@ -100,7 +104,7 @@
                         {% endfor %}
                     {% endif %}
 
-                    <p class="lead text-center mb-4 text-muted">
+                    <p class="lead text-center mb-4 text-white-custom">
                         <i class="fas fa-info-circle me-1"></i>
                         Escolha o nível que melhor se adapta aos seus objetivos de investimento.
                     </p>
@@ -112,18 +116,18 @@
                                 {{ nivel_ativo_usuario.nome }}
                                 <span class="badge badge-active">Ativo</span>
                             {% else %}
-                                Nenhum nível ativo.
+                                <span class="text-white-custom">Nenhum nível ativo.</span>
                             {% endif %}
                         </p>
                         {% if nivel_ativo_usuario %}
-                            <p class="text-muted mb-0">
+                            <p class="text-white-custom mb-0">
                                 Depósito: <strong class="text-value">{{ nivel_ativo_usuario.deposito_minimo|floatformat:2 }} Kz</strong>
                             </p>
-                            <p class="text-muted">
+                            <p class="text-white-custom">
                                 Ganho Diário: <strong class="text-value">{{ nivel_ativo_usuario.ganho_diario|floatformat:2 }} Kz</strong>
                             </p>
                         {% else %}
-                            <p class="text-muted">Faça um depósito para ativar seu nível!</p>
+                            <p class="text-white-custom">Faça um depósito para ativar seu nível!</p>
                         {% endif %}
                     </div>
 
@@ -136,13 +140,13 @@
                                         <div class="card-body">
                                             <h4 class="card-title">{{ nivel.nome }}</h4>
                                             <hr class="border-secondary">
-                                            <p class="card-text text-muted">Depósito Mínimo: <strong class="text-value">{{ nivel.deposito_minimo|floatformat:2 }} Kz</strong></p>
-                                            <p class="card-text text-muted">Ganho Diário: <strong class="text-value">{{ nivel.ganho_diario|floatformat:2 }} Kz</strong></p>
-                                            <p class="card-text text-muted">Duração: {{ nivel.duracao_dias }} dias</p>
+                                            <p class="card-text text-white-custom">Depósito Mínimo: <strong class="text-value">{{ nivel.deposito_minimo|floatformat:2 }} Kz</strong></p>
+                                            <p class="card-text text-white-custom">Ganho Diário: <strong class="text-value">{{ nivel.ganho_diario|floatformat:2 }} Kz</strong></p>
+                                            <p class="card-text text-white-custom">Duração: {{ nivel.duracao_dias }} dias</p>
                                             {% if nivel_ativo_usuario and nivel_ativo_usuario.pk == nivel.pk %}
                                                 <span class="badge badge-active mt-3">Nível Atual</span>
                                             {% else %}
-                                                <span class="badge bg-secondary mt-3">Clique em Depósito para ativar</span>
+                                                <span class="badge bg-secondary mt-3 text-white-custom">Clique em Depósito para ativar</span>
                                             {% endif %}
                                         </div>
                                     </div>
@@ -150,7 +154,7 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <p class="text-center text-muted">Nenhum nível de investimento disponível no momento. Por favor, contacte o suporte.</p>
+                        <p class="text-center text-white-custom">Nenhum nível de investimento disponível no momento. Por favor, contacte o suporte.</p>
                     {% endif %}
 
                     <div class="d-grid gap-2 mt-5">

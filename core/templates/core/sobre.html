@@ -69,6 +69,9 @@
         background-color: #5a6268;
         transform: translateY(-2px);
     }
+    .text-light-custom {
+        color: #e0e0e0 !important;
+    }
 </style>
 {% endblock %}
 
@@ -84,7 +87,7 @@
                     </h3>
                 </div>
                 <div class="card-body">
-                    <p class="lead text-center mb-5 text-muted">
+                    <p class="lead text-center mb-5 text-light-custom">
                         {{ introducao }}
                     </p>
 
@@ -93,8 +96,8 @@
                             <i class="fas fa-globe-americas"></i>
                             Nossa História e Origem (TEMEISHENG Global)
                         </h5>
-                        <p><strong>Origem:</strong> {{ resumo_historia.origem }}</p>
-                        <p><strong>Objetivo:</strong> {{ resumo_historia.objetivo }}</p>
+                        <p><strong>Origem:</strong> <span class="text-light-custom">{{ resumo_historia.origem }}</span></p>
+                        <p><strong>Objetivo:</strong> <span class="text-light-custom">{{ resumo_historia.objetivo }}</span></p>
                     </div>
 
                     <div class="info-card mb-4">
@@ -102,16 +105,12 @@
                             <i class="fas fa-city"></i>
                             TEMEISHENG em Angola - Nosso Compromisso
                         </h5>
-                        <p>
+                        <p class="text-light-custom">
                             <strong>Surgimento em Angola:</strong> 
-                            {% if historia_angola.surgimento == '04 de Outubro de 2025' %}
-                                <strong style="color: #ff5722;">{{ historia_angola.surgimento }}</strong>
-                            {% else %}
-                                {{ historia_angola.surgimento }}
-                            {% endif %}
+                            <strong style="color: #ff5722;">04 de Setembro de 2025</strong>
                         </p>
-                        <p><strong>Duração no Mercado de Investimento Online:</strong> {{ historia_angola.duracao_mercado }}</p>
-                        <p><strong>Contrato com o Cliente:</strong> {{ historia_angola.contrato_cliente }}</p>
+                        <p><strong>Duração no Mercado de Investimento Online:</strong> <span class="text-light-custom">{{ historia_angola.duracao_mercado }}</span></p>
+                        <p><strong>Contrato com o Cliente:</strong> <span class="text-light-custom">{{ historia_angola.contrato_cliente }}</span></p>
                     </div>
 
                     <div class="info-card mb-4">
@@ -156,7 +155,7 @@
                             </p>
                         {% endif %}
                         {% if not whatsapp_numero and not telegram_numero and not whatsapp_grupo_link and not telegram_grupo_link %}
-                            <p>Informações de contato e suporte não disponíveis no momento.</p>
+                            <p class="text-light-custom">Informações de contato e suporte não disponíveis no momento.</p>
                         {% endif %}
                     </div>
 

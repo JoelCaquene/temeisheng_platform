@@ -87,6 +87,7 @@
     }
     .badge-inactive {
         background-color: #f39c12 !important;
+        color: #fff !important; /* Corrigido: Texto branco para visibilidade */
     }
     .btn-back {
         background-color: #6c757d;
@@ -159,7 +160,7 @@
                                 {% for membro in equipe %}
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <div>
-                                            <p class="mb-0"><strong>{{ membro.first_name|default:membro.phone_number }}</strong></p>
+                                            <p class="mb-0 text-white"><strong>{{ membro.first_name|default:membro.phone_number }}</strong></p>
                                             <small class="text-muted">Telefone: {{ membro.phone_number }}</small>
                                         </div>
                                         <div>

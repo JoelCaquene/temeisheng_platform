@@ -83,6 +83,10 @@
         border: none;
         color: #fff;
     }
+    /* Classe para texto claro */
+    .text-light-custom {
+        color: #e0e0e0 !important;
+    }
 </style>
 {% endblock %}
 
@@ -108,48 +112,48 @@
                     {% endif %}
 
                     <div class="mb-4 profile-info">
-                        <h5>
+                        <h5 class="text-light-custom">
                             <i class="fas fa-user-tag me-2"></i>
                             <strong>Nome:</strong> <span class="highlight-text">{{ user.first_name|default:"Não Definido" }}</span>
                         </h5>
-                        <p><strong>Número de Telefone:</strong> {{ user.phone_number }}</p>
-                        <p><strong>Nível Atual:</strong> 
+                        <p class="text-light-custom"><strong>Número de Telefone:</strong> {{ user.phone_number }}</p>
+                        <p class="text-light-custom"><strong>Nível Atual:</strong> 
                             <span class="highlight-text">
                                 {% if saldo.nivel_ativo %}{{ saldo.nivel_ativo.nome }}{% else %}Nenhum{% endif %}
                             </span>
                         </p>
-                        <p><strong>Data de Cadastro:</strong> {{ user.date_joined|date:"d/m/Y H:i" }}</p>
+                        <p class="text-light-custom"><strong>Data de Cadastro:</strong> {{ user.date_joined|date:"d/m/Y H:i" }}</p>
                     </div>
 
                     <div class="saldo-card mb-4">
-                        <h5>
+                        <h5 class="text-light-custom">
                             <i class="fas fa-wallet"></i>
                             Informações de Saldo
                         </h5>
-                        <p>
+                        <p class="text-light-custom">
                             Saldo Acumulado: 
                             <span class="saldo-valor saldo-acumulado-color">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span>
                         </p>
-                        <p>
+                        <p class="text-light-custom">
                             Saldo de Subsídio: 
                             <span class="saldo-valor saldo-subsidy-color">{{ saldo.saldo_subsidy|floatformat:2 }} Kz</span>
                         </p>
-                        <p>
+                        <p class="text-light-custom">
                             Total Sacado: 
                             <span class="saldo-valor total-sacado-color">{{ saldo.total_sacado|floatformat:2 }} Kz</span>
                         </p>
                     </div>
 
                     <div class="saldo-card mb-4">
-                        <h5>
+                        <h5 class="text-light-custom">
                             <i class="fas fa-university"></i>
                             Dados Bancários para Saque
                         </h5>
                         {% if saldo.banco_padrao_saque and saldo.iban_padrao_saque %}
-                            <p class="profile-info"><strong>Banco:</strong> {{ saldo.banco_padrao_saque }}</p>
-                            <p class="profile-info"><strong>IBAN:</strong> {{ saldo.iban_padrao_saque }}</p>
+                            <p class="profile-info text-light-custom"><strong>Banco:</strong> {{ saldo.banco_padrao_saque }}</p>
+                            <p class="profile-info text-light-custom"><strong>IBAN:</strong> {{ saldo.iban_padrao_saque }}</p>
                         {% else %}
-                            <p class="text-muted">Nenhum dado bancário padrão configurado. Edite seu perfil para adicioná-los.</p>
+                            <p class="text-light-custom text-muted">Nenhum dado bancário padrão configurado. Edite seu perfil para adicioná-los.</p>
                         {% endif %}
                     </div>
 
