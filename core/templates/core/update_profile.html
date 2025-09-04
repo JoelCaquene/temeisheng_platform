@@ -37,12 +37,12 @@
                         
                         {# IMPORTANTE: Estes campos (banco_padrao_saque, iban_padrao_saque) PRECISAM ser adicionados ao seu modelo SaldoUsuario no core/models.py #}
                         <div class="mb-3">
-                            <label for="id_banco_cliente" class="form-label" style="color: #ecf0f1;">Nome do Banco:</label>
-                            <input type="text" class="form-control" id="id_banco_cliente" name="banco_cliente" value="{{ saldo.banco_padrao_saque|default:'' }}" placeholder="Ex: BFA, BIC, BAI">
+                            <label for="id_banco_padrao_saque" class="form-label" style="color: #ecf0f1;">Nome do Banco:</label>
+                            <input type="text" class="form-control" id="id_banco_padrao_saque" name="banco_padrao_saque" value="{{ saldo.banco_padrao_saque|default:'' }}" placeholder="Ex: BFA, BIC, BAI">
                         </div>
                         <div class="mb-3">
-                            <label for="id_iban_cliente" class="form-label" style="color: #ecf0f1;">Seu IBAN:</label>
-                            <input type="text" class="form-control" id="id_iban_cliente" name="iban_cliente" value="{{ saldo.iban_padrao_saque|default:'' }}" placeholder="Ex: AO06.0000.0000.0000.0000.00000">
+                            <label for="id_iban_padrao_saque" class="form-label" style="color: #ecf0f1;">Seu IBAN:</label>
+                            <input type="text" class="form-control" id="id_iban_padrao_saque" name="iban_padrao_saque" value="{{ saldo.iban_padrao_saque|default:'' }}" placeholder="Ex: AO06.0000.0000.0000.0000.00000">
                             <div class="form-text" style="color: #bdc3c7;">Certifique-se de que o IBAN está correto para evitar atrasos nos saques.</div>
                         </div>
 
