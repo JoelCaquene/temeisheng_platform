@@ -6,66 +6,29 @@
 {% block extra_css %}
 <style>
     body {
-        background-color: #0d1a26; /* Azul escuro quase preto */
-        color: #e0f2f7; /* Cor do texto claro para contraste */
-    }
-    .card {
-        background: linear-gradient(145deg, #1a2a3a, #13202b); /* Gradiente azul escuro com leve brilho */
-        border: 1px solid #0f3d52; /* Borda mais sutil */
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Sombra mais pronunciada para "brilho" */
-    }
-    .card-header {
-        background-color: #1a2a3a; /* Azul escuro para o cabeçalho */
-        border-bottom: 1px solid #0f3d52;
-        color: #87ceeb; /* Azul claro brilhante para o título */
-    }
-    .text-muted-dark {
-        color: #a7d9ed !important; /* Cor mais suave para o texto de ajuda */
-    }
-    .text-balance-label {
+        background-color: #0d1a26;
         color: #e0f2f7;
     }
-    .text-balance-value {
-        font-weight: bold;
+    .card {
+        background: linear-gradient(145deg, #1a2a3a, #13202b);
+        border: 1px solid #0f3d52;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
     }
-    .text-success-bright {
-        color: #2ecc71; /* Cor de sucesso brilhante */
-    }
-    .text-danger-bright {
-        color: #e74c3c; /* Cor de perigo brilhante */
-    }
-    .text-info-bright {
-        color: #1abc9c; /* Cor de informação brilhante */
+    .card-header {
+        background-color: #1a2a3a;
+        border-bottom: 1px solid #0f3d52;
+        color: #87ceeb;
     }
     .btn {
-        transition: all 0.3s ease;
+        font-size: 0.9rem; /* Torna os botões menores */
+        padding: 0.75rem 0.5rem; /* Ajusta o padding para se encaixarem melhor */
+        transition: transform 0.2s ease-in-out;
     }
     .btn:hover {
-        transform: translateY(-2px); /* Efeito de elevação ao passar o mouse */
+        transform: translateY(-2px);
     }
-    .btn-custom {
-        background-color: #00bcd4; /* Azul turquesa vibrante */
-        border-color: #00bcd4;
-        color: white;
-    }
-    .btn-custom:hover {
-        background-color: #00a8bd;
-        border-color: #00a8bd;
-    }
-    /* Estilo para a linha de botões pequenos */
-    .btn-group-sm-4 {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px; /* Espaço entre os botões */
-    }
-    .btn-group-sm-4 .btn {
-        flex: 1 1 45%; /* 2 botões por linha em telas menores */
-    }
-    @media (min-width: 576px) {
-        .btn-group-sm-4 .btn {
-            flex: 1 1 23%; /* 4 botões por linha em telas maiores que 576px */
-        }
-    }
+    
+    /* Cores dos botões */
     .btn-deposit { background-color: #2ecc71; border-color: #27ae60; color: white;}
     .btn-withdraw { background-color: #e74c3c; border-color: #c0392b; color: white;}
     .btn-task { background-color: #f39c12; border-color: #e67e22; color: white;}
@@ -73,6 +36,19 @@
     .btn-team { background-color: #3498db; border-color: #2980b9; color: white;}
     .btn-profile { background-color: #e67e22; border-color: #d35400; color: white;}
     
+    /* Estilos para o texto no card de saldo */
+    .balance-card {
+        background-color: #2c3e50;
+        border: 1px solid #1a242f;
+        color: #bdc3c7;
+    }
+    .balance-card h4 {
+        color: #ecf0f1;
+    }
+    .balance-value {
+        font-weight: bold;
+    }
+
 </style>
 {% endblock %}
 
@@ -94,43 +70,61 @@
                         {% endfor %}
                     {% endif %}
 
-                    <p class="text-center mb-4 text-muted-dark">Aqui você verá seu saldo, nível, e outras informações.</p>
+                    <p class="text-center mb-4" style="color: #bdc3c7;">Aqui você verá seu saldo, nível, e outras informações.</p>
 
-                    <div class="btn-group-sm-4 mb-4">
-                        <a href="{% url 'deposito' %}" class="btn btn-sm btn-deposit d-flex align-items-center justify-content-center">
-                            <i class="fas fa-wallet me-1"></i>Depósito
-                        </a>
-                        <a href="{% url 'saque' %}" class="btn btn-sm btn-withdraw d-flex align-items-center justify-content-center">
-                            <i class="fas fa-money-bill-wave me-1"></i>Saque
-                        </a>
-                        <a href="{% url 'tarefa' %}" class="btn btn-sm btn-task d-flex align-items-center justify-content-center">
-                            <i class="fas fa-tasks me-1"></i>Tarefa
-                        </a>
-                        <a href="{% url 'nivel' %}" class="btn btn-sm btn-level d-flex align-items-center justify-content-center">
-                            <i class="fas fa-chart-line me-1"></i>Nível
-                        </a>
-                        <a href="{% url 'minha_equipe' %}" class="btn btn-sm btn-team d-flex align-items-center justify-content-center">
-                            <i class="fas fa-users me-1"></i>Equipe
-                        </a>
-                        <a href="{% url 'perfil' %}" class="btn btn-sm btn-profile d-flex align-items-center justify-content-center">
-                            <i class="fas fa-user-circle me-1"></i>Perfil
-                        </a>
-                    </div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6 col-sm-3 d-grid">
+                            <a href="{% url 'deposito' %}" class="btn btn-deposit d-flex flex-column align-items-center justify-content-center">
+                                <i class="fas fa-wallet fa-lg mb-1"></i>
+                                Depósito
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-3 d-grid">
+                            <a href="{% url 'saque' %}" class="btn btn-withdraw d-flex flex-column align-items-center justify-content-center">
+                                <i class="fas fa-money-bill-wave fa-lg mb-1"></i>
+                                Saque
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-3 d-grid">
+                            <a href="{% url 'tarefa' %}" class="btn btn-task d-flex flex-column align-items-center justify-content-center">
+                                <i class="fas fa-tasks fa-lg mb-1"></i>
+                                Tarefa
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-3 d-grid">
+                            <a href="{% url 'nivel' %}" class="btn btn-level d-flex flex-column align-items-center justify-content-center">
+                                <i class="fas fa-chart-line fa-lg mb-1"></i>
+                                Nível
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-3 d-grid">
+                            <a href="{% url 'minha_equipe' %}" class="btn btn-team d-flex flex-column align-items-center justify-content-center">
+                                <i class="fas fa-users fa-lg mb-1"></i>
+                                Equipe
+                            </a>
+                        </div>
+                        <div class="col-6 col-sm-3 d-grid">
+                            <a href="{% url 'perfil' %}" class="btn btn-profile d-flex flex-column align-items-center justify-content-center">
+                                <i class="fas fa-user-circle fa-lg mb-1"></i>
+                                Perfil
+                            </a>
+                        </div>
+                        </div>
 
-                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
-                        <h4 class="text-balance-label">Seu Saldo:</h4>
-                        <p class="text-muted-dark"><span class="text-balance-label">Saldo Acumulado:</span> <span class="text-success-bright text-balance-value">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
-                        <p class="text-muted-dark"><span class="text-balance-label">Saldo de Subsídio:</span> <span class="text-success-bright text-balance-value">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
-                        <p class="text-muted-dark"><span class="text-balance-label">Total Sacado:</span> <span class="text-danger-bright text-balance-value">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
-                        <p class="text-muted-dark"><span class="text-balance-label">Seu Nível Ativo:</span> <span class="text-info-bright text-balance-value">{% if saldo.nivel_ativo %}{{ saldo.nivel_ativo.nome }}{% else %}Nenhum{% endif %}</span></p>
+                    <div class="card p-3 mb-4 balance-card">
+                        <h4 class="text-center">Seu Saldo:</h4>
+                        <p>Saldo Acumulado: <span class="text-success-bright balance-value">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
+                        <p>Saldo de Subsídio: <span class="text-success-bright balance-value">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
+                        <p>Total Sacado: <span class="text-danger-bright balance-value">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
+                        <p>Seu Nível Ativo: <span class="text-info-bright balance-value">{% if saldo.nivel_ativo %}{{ saldo.nivel_ativo.nome }}{% else %}Nenhum{% endif %}</span></p>
                         {% if not saldo.nivel_ativo %}
-                            <p class="text-muted-dark">Faça um depósito para ativar seu nível e começar a ganhar!</p>
+                            <p style="color: #bdc3c7;">Faça um depósito para ativar seu nível e começar a ganhar!</p>
                         {% endif %}
                     </div>
-
-                    <div class="card p-3 mb-4" style="background-color: #2c3e50; border: 1px solid #1a242f;">
-                        <h4 class="text-white">Imagens da Plataforma</h4>
-                        <p class="text-muted-dark">Veja algumas capturas de tela da nossa plataforma.</p>
+                    
+                    <div class="card p-3 mb-4 balance-card">
+                        <h4 class="text-center text-white">Exibir Imagens da Plataforma</h4>
+                        <p style="color: #bdc3c7;">Veja algumas capturas de tela da nossa plataforma.</p>
                         <div class="row justify-content-center mt-3">
                             <div class="col-4">
                                 <img src="{% static 'img/placeholder1.jpg' %}" alt="Imagem 1" class="img-fluid rounded shadow-sm" style="border: 2px solid #3498db;">
@@ -139,7 +133,7 @@
                                 <img src="{% static 'img/placeholder2.jpg' %}" alt="Imagem 2" class="img-fluid rounded shadow-sm" style="border: 2px solid #e74c3c;">
                             </div>
                             <div class="col-4">
-                                <img src="{% static 'img/placeholder3.jpg'}" alt="Imagem 3" class="img-fluid rounded shadow-sm" style="border: 2px solid #f39c12;">
+                                <img src="{% static 'img/placeholder3.jpg' %}" alt="Imagem 3" class="img-fluid rounded shadow-sm" style="border: 2px solid #f39c12;">
                             </div>
                         </div>
                     </div>
