@@ -5,50 +5,76 @@
 
 {% block extra_css %}
 <style>
+    /* Estilos para o fundo e o card principal */
     body {
-        background-color: #0d1a26;
-        color: #e0f2f7;
+        background-color: #2c3e50; /* Fundo principal Dark Blue/Gray */
+        color: #ecf0f1; /* Texto claro Off-white */
     }
     .card {
-        background: linear-gradient(145deg, #1a2a3a, #13202b);
-        border: 1px solid #0f3d52;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+        background: linear-gradient(145deg, #34495e, #2c3e50); /* Card mais escuro com um leve gradiente */
+        border: 1px solid #3498db; /* Borda chamativa azul brilhante */
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5); /* Sombra mais forte para um visual "flutuante" */
+        border-radius: 12px;
     }
     .card-header {
-        background-color: #1a2a3a;
-        border-bottom: 1px solid #0f3d52;
-        color: #87ceeb;
-    }
-    .btn {
-        font-size: 0.9rem; /* Torna os botões menores */
-        padding: 0.75rem 0.5rem; /* Ajusta o padding para se encaixarem melhor */
-        transition: transform 0.2s ease-in-out;
-    }
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-    
-    /* Cores dos botões */
-    .btn-deposit { background-color: #2ecc71; border-color: #27ae60; color: white;}
-    .btn-withdraw { background-color: #e74c3c; border-color: #c0392b; color: white;}
-    .btn-task { background-color: #f39c12; border-color: #e67e22; color: white;}
-    .btn-level { background-color: #9b59b6; border-color: #8e44ad; color: white;}
-    .btn-team { background-color: #3498db; border-color: #2980b9; color: white;}
-    .btn-profile { background-color: #e67e22; border-color: #d35400; color: white;}
-    
-    /* Estilos para o texto no card de saldo */
-    .balance-card {
-        background-color: #2c3e50;
-        border: 1px solid #1a242f;
-        color: #bdc3c7;
-    }
-    .balance-card h4 {
-        color: #ecf0f1;
-    }
-    .balance-value {
+        background-color: #34495e; /* Fundo do cabeçalho */
+        border-bottom: 1px solid #3498db;
+        color: #3498db; /* Título em azul brilhante */
         font-weight: bold;
     }
 
+    /* Estilos para os botões */
+    .btn {
+        font-size: 0.9rem;
+        font-weight: bold;
+        padding: 0.75rem 0.5rem;
+        border-radius: 8px; /* Cantos arredondados */
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .btn:hover {
+        transform: translateY(-3px); /* Efeito de elevação mais pronunciado */
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Cores dos botões conforme as cores que você listou */
+    .btn-deposit { background-color: #2ecc71; border-color: #27ae60; } /* Emerald Green */
+    .btn-withdraw { background-color: #e74c3c; border-color: #c0392b; } /* Alizarin Red */
+    .btn-task { background-color: #f39c12; border-color: #e67e22; } /* Amarelo-Laranja */
+    .btn-level { background-color: #9b59b6; border-color: #8e44ad; } /* Amethyst */
+    .btn-team { background-color: #3498db; border-color: #2980b9; } /* Bright Blue */
+    .btn-profile { background-color: #e67e22; border-color: #d35400; } /* Laranja */
+    .btn-secondary { background-color: #7f8c8d; border-color: #7f8c8d; } /* Asbestos/Gray */
+
+    /* Estilos para o card de saldo e texto */
+    .balance-card {
+        background-color: #2c3e50;
+        border: 1px solid #3498db;
+        border-radius: 12px;
+        box-shadow: inset 0 0 10px rgba(52, 152, 219, 0.2); /* Sombra interna para um efeito de "brilho" */
+    }
+    .balance-card h4 {
+        color: #3498db; /* Título em azul brilhante */
+        font-weight: bold;
+    }
+    .balance-text {
+        color: #bdc3c7; /* Texto cinza suave */
+    }
+    .balance-value {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+    .text-success-bright { color: #2ecc71; }
+    .text-danger-bright { color: #e74c3c; }
+    .text-info-bright { color: #1abc9c; }
+
+    /* Estilo para as imagens com bordas coloridas e transição */
+    .img-fluid.rounded.shadow-sm {
+        transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .img-fluid:hover {
+        transform: scale(1.05); /* Zoom sutil na imagem ao passar o mouse */
+    }
 </style>
 {% endblock %}
 
@@ -70,62 +96,62 @@
                         {% endfor %}
                     {% endif %}
 
-                    <p class="text-center mb-4" style="color: #bdc3c7;">Aqui você verá seu saldo, nível, e outras informações.</p>
+                    <p class="text-center mb-4 balance-text">Aqui você verá seu saldo, nível, e outras informações.</p>
 
-                    <div class="row g-2 mb-4">
-                        <div class="col-6 col-sm-3 d-grid">
+                    <div class="row g-3 mb-4">
+                        <div class="col-6 col-md-3 d-grid">
                             <a href="{% url 'deposito' %}" class="btn btn-deposit d-flex flex-column align-items-center justify-content-center">
-                                <i class="fas fa-wallet fa-lg mb-1"></i>
+                                <i class="fas fa-wallet fa-2x mb-2"></i>
                                 Depósito
                             </a>
                         </div>
-                        <div class="col-6 col-sm-3 d-grid">
+                        <div class="col-6 col-md-3 d-grid">
                             <a href="{% url 'saque' %}" class="btn btn-withdraw d-flex flex-column align-items-center justify-content-center">
-                                <i class="fas fa-money-bill-wave fa-lg mb-1"></i>
+                                <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
                                 Saque
                             </a>
                         </div>
-                        <div class="col-6 col-sm-3 d-grid">
+                        <div class="col-6 col-md-3 d-grid">
                             <a href="{% url 'tarefa' %}" class="btn btn-task d-flex flex-column align-items-center justify-content-center">
-                                <i class="fas fa-tasks fa-lg mb-1"></i>
+                                <i class="fas fa-tasks fa-2x mb-2"></i>
                                 Tarefa
                             </a>
                         </div>
-                        <div class="col-6 col-sm-3 d-grid">
+                        <div class="col-6 col-md-3 d-grid">
                             <a href="{% url 'nivel' %}" class="btn btn-level d-flex flex-column align-items-center justify-content-center">
-                                <i class="fas fa-chart-line fa-lg mb-1"></i>
+                                <i class="fas fa-chart-line fa-2x mb-2"></i>
                                 Nível
                             </a>
                         </div>
-                        <div class="col-6 col-sm-3 d-grid">
+                        <div class="col-6 col-md-3 d-grid">
                             <a href="{% url 'minha_equipe' %}" class="btn btn-team d-flex flex-column align-items-center justify-content-center">
-                                <i class="fas fa-users fa-lg mb-1"></i>
+                                <i class="fas fa-users fa-2x mb-2"></i>
                                 Equipe
                             </a>
                         </div>
-                        <div class="col-6 col-sm-3 d-grid">
+                        <div class="col-6 col-md-3 d-grid">
                             <a href="{% url 'perfil' %}" class="btn btn-profile d-flex flex-column align-items-center justify-content-center">
-                                <i class="fas fa-user-circle fa-lg mb-1"></i>
+                                <i class="fas fa-user-circle fa-2x mb-2"></i>
                                 Perfil
                             </a>
                         </div>
-                        </div>
+                    </div>
 
                     <div class="card p-3 mb-4 balance-card">
                         <h4 class="text-center">Seu Saldo:</h4>
-                        <p>Saldo Acumulado: <span class="text-success-bright balance-value">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
-                        <p>Saldo de Subsídio: <span class="text-success-bright balance-value">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
-                        <p>Total Sacado: <span class="text-danger-bright balance-value">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
-                        <p>Seu Nível Ativo: <span class="text-info-bright balance-value">{% if saldo.nivel_ativo %}{{ saldo.nivel_ativo.nome }}{% else %}Nenhum{% endif %}</span></p>
+                        <p class="balance-text">Saldo Acumulado: <span class="text-success-bright balance-value">{{ saldo.saldo_acumulado|floatformat:2 }} Kz</span></p>
+                        <p class="balance-text">Saldo de Subsídio: <span class="text-success-bright balance-value">{{ saldo.saldo_subsidio|floatformat:2 }} Kz</span></p>
+                        <p class="balance-text">Total Sacado: <span class="text-danger-bright balance-value">{{ saldo.total_sacado|floatformat:2 }} Kz</span></p>
+                        <p class="balance-text">Seu Nível Ativo: <span class="text-info-bright balance-value">{% if saldo.nivel_ativo %}{{ saldo.nivel_ativo.nome }}{% else %}Nenhum{% endif %}</span></p>
                         {% if not saldo.nivel_ativo %}
-                            <p style="color: #bdc3c7;">Faça um depósito para ativar seu nível e começar a ganhar!</p>
+                            <p class="balance-text">Faça um depósito para ativar seu nível e começar a ganhar!</p>
                         {% endif %}
                     </div>
                     
                     <div class="card p-3 mb-4 balance-card">
-                        <h4 class="text-center text-white">Exibir Imagens da Plataforma</h4>
-                        <p style="color: #bdc3c7;">Veja algumas capturas de tela da nossa plataforma.</p>
-                        <div class="row justify-content-center mt-3">
+                        <h4 class="text-center">Exibir Imagens da Plataforma</h4>
+                        <p class="balance-text">Veja algumas capturas de tela da nossa plataforma.</p>
+                        <div class="row justify-content-center mt-3 g-2">
                             <div class="col-4">
                                 <img src="{% static 'img/placeholder1.jpg' %}" alt="Imagem 1" class="img-fluid rounded shadow-sm" style="border: 2px solid #3498db;">
                             </div>
