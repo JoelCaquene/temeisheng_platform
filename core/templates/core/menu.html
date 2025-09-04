@@ -6,8 +6,8 @@
 {% block extra_css %}
 <style>
     .card {
-        background: linear-gradient(145deg, #16213e, #0f3460); /* Card com gradiente escuro */
-        border: 1px solid #e94560; /* Borda chamativa */
+        background: linear-gradient(145deg, #16213e, #0f3460);
+        border: 1px solid #e94560;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
         border-radius: 15px;
         transition: transform 0.3s ease;
@@ -18,7 +18,7 @@
     .card-header {
         background-color: #0f3460;
         border-bottom: 2px solid #e94560;
-        color: #ff5722; /* Laranja vibrante */
+        color: #ff5722;
         font-weight: bold;
         font-size: 1.5rem;
     }
@@ -30,20 +30,27 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         color: #e0e0e0;
+        position: relative;
+        overflow: hidden;
     }
     .btn:hover {
         transform: translateY(-3px);
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
     }
 
-    /* Cores dos botões */
-    .btn-deposit { background-color: #28a745; border-color: #218838; } /* Verde vibrante */
-    .btn-withdraw { background-color: #dc3545; border-color: #c82333; } /* Vermelho intenso */
-    .btn-task { background-color: #ffc107; border-color: #e0a800; color: #1a1a2e; } /* Amarelo chamativo */
-    .btn-level { background-color: #6f42c1; border-color: #563d7c; } /* Roxo profundo */
-    .btn-team { background-color: #007bff; border-color: #0069d9; } /* Azul brilhante */
-    .btn-profile { background-color: #6c757d; border-color: #5a6268; } /* Cinza neutro */
-    .btn-secondary { background-color: #1abc9c; border-color: #148f77; } /* Turquesa */
+    /* Estilo "glasismo" para os botões */
+    .btn-custom {
+        background-color: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: #e0e0e0;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    }
+    .btn-custom i {
+        color: #ff5722; /* Cor dos ícones para destaque */
+        text-shadow: 0 0 5px #ff5722;
+    }
 
     .balance-card {
         background-color: #1a1a2e;
@@ -63,9 +70,9 @@
         font-weight: 700;
         font-size: 1.2em;
     }
-    .text-success-bright { color: #28a745; }
-    .text-danger-bright { color: #dc3545; }
-    .text-info-bright { color: #1abc9c; }
+    .text-success-bright { color: #2ecc71; }
+    .text-danger-bright { color: #e74c3c; }
+    .text-info-bright { color: #3498db; }
 
     /* Estilo para as mensagens de alerta */
     .alert {
@@ -125,37 +132,37 @@
 
                     <div class="row g-3 mb-4">
                         <div class="col-6 col-md-4 d-grid">
-                            <a href="{% url 'deposito' %}" class="btn btn-deposit d-flex flex-column align-items-center justify-content-center">
+                            <a href="{% url 'deposito' %}" class="btn btn-custom d-flex flex-column align-items-center justify-content-center">
                                 <i class="fas fa-wallet fa-2x mb-2"></i>
                                 Depósito
                             </a>
                         </div>
                         <div class="col-6 col-md-4 d-grid">
-                            <a href="{% url 'saque' %}" class="btn btn-withdraw d-flex flex-column align-items-center justify-content-center">
+                            <a href="{% url 'saque' %}" class="btn btn-custom d-flex flex-column align-items-center justify-content-center">
                                 <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
                                 Saque
                             </a>
                         </div>
                         <div class="col-6 col-md-4 d-grid">
-                            <a href="{% url 'tarefa' %}" class="btn btn-task d-flex flex-column align-items-center justify-content-center">
+                            <a href="{% url 'tarefa' %}" class="btn btn-custom d-flex flex-column align-items-center justify-content-center">
                                 <i class="fas fa-tasks fa-2x mb-2"></i>
                                 Tarefa
                             </a>
                         </div>
                         <div class="col-6 col-md-4 d-grid">
-                            <a href="{% url 'nivel' %}" class="btn btn-level d-flex flex-column align-items-center justify-content-center">
+                            <a href="{% url 'nivel' %}" class="btn btn-custom d-flex flex-column align-items-center justify-content-center">
                                 <i class="fas fa-chart-line fa-2x mb-2"></i>
                                 Nível
                             </a>
                         </div>
                         <div class="col-6 col-md-4 d-grid">
-                            <a href="{% url 'minha_equipe' %}" class="btn btn-team d-flex flex-column align-items-center justify-content-center">
+                            <a href="{% url 'minha_equipe' %}" class="btn btn-custom d-flex flex-column align-items-center justify-content-center">
                                 <i class="fas fa-users fa-2x mb-2"></i>
                                 Equipe
                             </a>
                         </div>
                         <div class="col-6 col-md-4 d-grid">
-                            <a href="{% url 'perfil' %}" class="btn btn-profile d-flex flex-column align-items-center justify-content-center">
+                            <a href="{% url 'perfil' %}" class="btn btn-custom d-flex flex-column align-items-center justify-content-center">
                                 <i class="fas fa-user-circle fa-2x mb-2"></i>
                                 Perfil
                             </a>
@@ -177,8 +184,8 @@
                     </div>
                     
                     <div class="d-grid gap-2 mt-4">
-                        <a href="{% url 'sobre' %}" class="btn btn-secondary btn-lg">Sobre a Plataforma</a>
-                        <a href="{% url 'logout' %}" class="btn btn-secondary btn-lg">Sair da Conta</a>
+                        <a href="{% url 'sobre' %}" class="btn btn-custom btn-lg">Sobre a Plataforma</a>
+                        <a href="{% url 'logout' %}" class="btn btn-custom btn-lg">Sair da Conta</a>
                     </div>
                 </div>
             </div>
@@ -186,3 +193,6 @@
     </div>
 </div>
 {% endblock %}
+<br>
+This video discusses the design trend of neumorphism and how it can be applied to buttons and other elements in a user interface. [O que é NEUMORPHISM? - YouTube](https://www.youtube.com/watch?v=X8IPWjgMwrY)
+http://googleusercontent.com/youtube_content/0

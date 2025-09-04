@@ -11,20 +11,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         body {
-            background-color: #1a1a2e; /* Roxo escuro */
-            color: #e0e0e0; /* Cinza claro suave */
+            background-color: #1a1a2e;
+            color: #e0e0e0;
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         .navbar, .footer {
-            background-color: #16213e; /* Tom mais escuro */
+            background-color: #16213e;
             border-bottom: 2px solid #0f3460;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
         }
         .navbar-brand {
-            color: #e94560 !important; /* Rosa/Vermelho chamativo */
+            color: #e94560 !important;
             font-weight: 700;
             font-size: 2em;
             text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
@@ -35,7 +35,7 @@
             transition: color 0.3s ease, transform 0.2s ease;
         }
         .navbar-nav .nav-link:hover {
-            color: #ff5722 !important; /* Laranja vibrante */
+            color: #ff5722 !important;
             transform: translateY(-2px);
         }
         .footer-nav {
@@ -58,14 +58,14 @@
             transition: color 0.3s ease;
         }
         .footer-nav .nav-link:hover {
-            color: #ff5722; /* Laranja vibrante */
+            color: #ff5722;
         }
         .footer-nav .nav-link i {
             font-size: 1.5em;
             margin-bottom: 5px;
         }
         .carousel-item img {
-            max-height: 500px; /* Altura máxima para as imagens */
+            max-height: 500px;
             object-fit: cover;
             border-radius: 15px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
@@ -99,24 +99,26 @@
         </div>
     </main>
 
-    <nav class="footer-nav">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-3">
-                    <a class="nav-link" href="{% url 'menu' %}"><i class="fas fa-home"></i>Menu</a>
-                </div>
-                <div class="col-3">
-                    <a class="nav-link" href="{% url 'tarefa' %}"><i class="fas fa-tasks"></i>Tarefa</a>
-                </div>
-                <div class="col-3">
-                    <a class="nav-link" href="{% url 'minha_equipe' %}"><i class="fas fa-users"></i>Equipe</a>
-                </div>
-                <div class="col-3">
-                    <a class="nav-link" href="{% url 'perfil' %}"><i class="fas fa-user-circle"></i>Perfil</a>
+    {% if user.is_authenticated %}
+        <nav class="footer-nav">
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-3">
+                        <a class="nav-link" href="{% url 'menu' %}"><i class="fas fa-home"></i>Menu</a>
+                    </div>
+                    <div class="col-3">
+                        <a class="nav-link" href="{% url 'tarefa' %}"><i class="fas fa-tasks"></i>Tarefa</a>
+                    </div>
+                    <div class="col-3">
+                        <a class="nav-link" href="{% url 'minha_equipe' %}"><i class="fas fa-users"></i>Equipe</a>
+                    </div>
+                    <div class="col-3">
+                        <a class="nav-link" href="{% url 'perfil' %}"><i class="fas fa-user-circle"></i>Perfil</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </nav>
+        </nav>
+    {% endif %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     {% block extra_js %}{% endblock %}
